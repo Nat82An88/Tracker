@@ -2,6 +2,10 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     
+    // MARK: - Properties
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
+    
     // MARK: - UI Elements
     private lazy var placeholderStackView: UIStackView = {
         let stackView = UIStackView()
@@ -33,6 +37,7 @@ final class TrackersViewController: UIViewController {
         picker.preferredDatePickerStyle = .compact
         picker.datePickerMode = .date
         picker.locale = Locale(identifier: "ru_RU")
+        picker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
         return picker
     }()
     
@@ -50,6 +55,7 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        updateUI()
     }
     
     // MARK: - UI Setup
@@ -132,8 +138,72 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
+    // MARK: - UI Update
+    private func updateUI() {
+        let hasData = !categories.isEmpty
+        placeholderStackView.isHidden = hasData
+        
+        // TODO: Обновить коллекцию/таблицу с трекерами
+        // Здесь будет логика фильтрации трекеров по выбранной дате и обновления UI
+    }
+    
     // MARK: - Actions
     @objc private func addButtonTapped() {
-        // Action for "+" button
+        // Создаем новый трекер для примера
+        let newTracker = Tracker(
+            title: "Новый трекер",
+            color: "#FF0000",
+            emoji: "🔥",
+            schedule: Weekday.allCases,
+            isHabit: true
+        )
+        
+        let updatedCategories: [TrackerCategory]
+        
+        if let existingCategoryIndex = categories.firstIndex(where: { $0.title == "Пример категории" }) {
+            let existingCategory = categories[existingCategoryIndex]
+            let updatedTrackers = existingCategory.trackers + [newTracker]
+            let updatedCategory = TrackerCategory(
+                title: existingCategory.title,
+                trackers: updatedTrackers
+            )
+            
+            updatedCategories = categories.enumerated().map { index, category in
+                index == existingCategoryIndex ? updatedCategory : category
+            }
+        } else {
+            let newCategory = TrackerCategory(
+                title: "Пример категории",
+                trackers: [newTracker]
+            )
+            updatedCategories = categories + [newCategory]
+        }
+        
+        categories = updatedCategories
+        updateUI()
+    }
+    
+    @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
+        updateUI()
+    }
+    
+    // MARK: - Tracker Completion Methods
+    func completeTracker(with id: UUID) {
+        let record = TrackerRecord(id: id, date: datePicker.date)
+        completedTrackers.append(record)
+        updateUI()
+    }
+    
+    func uncompleteTracker(with id: UUID) {
+        completedTrackers.removeAll {
+            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: datePicker.date)
+        }
+        updateUI()
+    }
+    
+    func isTrackerCompletedToday(_ id: UUID) -> Bool {
+        return completedTrackers.contains {
+            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: datePicker.date)
+        }
     }
 }
