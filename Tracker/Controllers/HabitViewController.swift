@@ -5,6 +5,8 @@ final class HabitViewController: UIViewController {
     // MARK: - Properties
     var onSave: ((Tracker, String) -> Void)?
     private var selectedDays: [Weekday] = []
+    private var scrollView: UIScrollView!
+    private var contentView: UIView!
     
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
@@ -82,34 +84,67 @@ final class HabitViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
+        setupKeyboardHandling()
+        setupTapGesture()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        titleTextField.becomeFirstResponder()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(titleTextField)
-        view.addSubview(optionsTableView)
-        view.addSubview(buttonsStackView)
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.keyboardDismissMode = .interactive
+        
+        contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(titleTextField)
+        contentView.addSubview(optionsTableView)
+        contentView.addSubview(buttonsStackView)
         
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(createButton)
         
         NSLayoutConstraint.activate([
-            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            titleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            titleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             titleTextField.heightAnchor.constraint(equalToConstant: 75),
             
             optionsTableView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 24),
-            optionsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            optionsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            optionsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            optionsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             optionsTableView.heightAnchor.constraint(equalToConstant: 150),
             
-            buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
+            buttonsStackView.topAnchor.constraint(equalTo: optionsTableView.bottomAnchor, constant: 24),
+            buttonsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            buttonsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
+            buttonsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
     }
     
@@ -135,12 +170,62 @@ final class HabitViewController: UIViewController {
         }
     }
     
+    private func setupKeyboardHandling() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
     private func updateCreateButtonState() {
         let isTitleValid = !(titleTextField.text?.isEmpty ?? true)
         let isScheduleSelected = !selectedDays.isEmpty
         
         createButton.isEnabled = isTitleValid && isScheduleSelected
         createButton.backgroundColor = createButton.isEnabled ? .ypBlackDay : .ypGray
+    }
+    
+    // MARK: - Keyboard Handling
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+        
+        if titleTextField.isFirstResponder {
+            let rect = titleTextField.convert(titleTextField.bounds, to: scrollView)
+            scrollView.scrollRectToVisible(rect, animated: true)
+        }
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: - Actions

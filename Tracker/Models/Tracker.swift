@@ -6,7 +6,7 @@ struct Tracker {
     let color: String
     let emoji: String
     let schedule: [Weekday]
-    let isHabit: Bool // true для привычки, false для нерегулярного события
+    let isHabit: Bool 
     
     init(id: UUID = UUID(), title: String, color: String, emoji: String, schedule: [Weekday], isHabit: Bool) {
         self.id = id
