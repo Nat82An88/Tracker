@@ -10,7 +10,6 @@ final class TabBarController: UITabBarController {
         let trackersNavVC = UINavigationController(rootViewController: TrackersViewController())
         let statisticsVC = StatisticsViewController()
         
-        // Настройка вкладок
         trackersNavVC.tabBarItem = UITabBarItem(
             title: nil,
             image: UIImage(named: "tracker_logo"),
@@ -27,7 +26,6 @@ final class TabBarController: UITabBarController {
         
         viewControllers = [trackersNavVC, statisticsVC]
         
-        // Настройка внешнего вида TabBar
         tabBar.backgroundColor = .systemBackground
         tabBar.tintColor = .ypBlue
         
