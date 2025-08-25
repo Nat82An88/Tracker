@@ -170,7 +170,7 @@ final class TrackersViewController: UIViewController {
     private func updateUI() {
         filterTrackersBySelectedDate()
         
-        let hasData = !filteredCategories.contains { !$0.trackers.isEmpty }
+        let hasData = filteredCategories.contains { !$0.trackers.isEmpty }
         placeholderStackView.isHidden = hasData
         collectionView.isHidden = !hasData
         
