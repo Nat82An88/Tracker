@@ -19,6 +19,9 @@ final class HabitViewController: UIViewController {
         textField.delegate = self
         textField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        
         return textField
     }()
     
@@ -40,13 +43,13 @@ final class HabitViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
     
     private lazy var cancelButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
         button.setTitleColor(.ypRed, for: .normal)
         button.backgroundColor = .white
@@ -54,19 +57,21 @@ final class HabitViewController: UIViewController {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.ypRed.cgColor
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.textAlignment = .center
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private lazy var createButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .ypGray
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.textAlignment = .center
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -104,33 +109,28 @@ final class HabitViewController: UIViewController {
             buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
-            
-            cancelButton.widthAnchor.constraint(equalTo: createButton.widthAnchor),
-            cancelButton.heightAnchor.constraint(equalToConstant: 60),
-            createButton.heightAnchor.constraint(equalToConstant: 60)
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
     private func setupNavigationBar() {
-        title = "Новая привычка"
-        navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
-        ]
+        navigationItem.titleView = {
+            let label = UILabel()
+            label.text = "Новая привычка"
+            label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .ypBlackDay
+            label.textAlignment = .center
+            label.sizeToFit()
+            return label
+        }()
         
-        // Настройка высоты navigation bar
         if let navigationBar = navigationController?.navigationBar {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .systemBackground
-            appearance.titleTextAttributes = [
-                .font: UIFont.systemFont(ofSize: 16, weight: .medium)
-            ]
-            
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.compactAppearance = appearance
-            
             navigationBar.prefersLargeTitles = false
         }
     }
@@ -162,8 +162,14 @@ final class HabitViewController: UIViewController {
         onSave?(newTracker, "Пример категории")
         dismiss(animated: true)
     }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        if let text = textField.text, text.count > 38 {
+            textField.text = String(text.prefix(38))
+        }
+        updateCreateButtonState()
+    }
 }
-
 // MARK: - Custom Table View Cell
 final class OptionTableViewCell: UITableViewCell {
     
