@@ -7,18 +7,6 @@ final class HabitViewController: UIViewController {
     private var selectedDays: [Weekday] = []
     
     // MARK: - UI Elements
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
-    }()
-    
-    private lazy var contentView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
@@ -29,6 +17,7 @@ final class HabitViewController: UIViewController {
         textField.clearButtonMode = .whileEditing
         textField.returnKeyType = .done
         textField.delegate = self
+        textField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -39,7 +28,8 @@ final class HabitViewController: UIViewController {
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "OptionCell")
+        tableView.separatorColor = UIColor(white: 0.0, alpha: 0.3)
+        tableView.register(OptionTableViewCell.self, forCellReuseIdentifier: "OptionCell")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -50,7 +40,7 @@ final class HabitViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
@@ -63,7 +53,9 @@ final class HabitViewController: UIViewController {
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.ypRed.cgColor
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -74,7 +66,9 @@ final class HabitViewController: UIViewController {
         button.backgroundColor = .ypGray
         button.layer.cornerRadius = 16
         button.isEnabled = false
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -89,43 +83,32 @@ final class HabitViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        
-        contentView.addSubview(titleTextField)
-        contentView.addSubview(optionsTableView)
-        contentView.addSubview(buttonsStackView)
+        view.addSubview(titleTextField)
+        view.addSubview(optionsTableView)
+        view.addSubview(buttonsStackView)
         
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(createButton)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-            titleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
-            titleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             titleTextField.heightAnchor.constraint(equalToConstant: 75),
             
             optionsTableView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 24),
-            optionsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            optionsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            optionsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            optionsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             optionsTableView.heightAnchor.constraint(equalToConstant: 150),
             
-            buttonsStackView.topAnchor.constraint(equalTo: optionsTableView.bottomAnchor, constant: 16),
-            buttonsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
-            buttonsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+            
+            cancelButton.widthAnchor.constraint(equalTo: createButton.widthAnchor),
+            cancelButton.heightAnchor.constraint(equalToConstant: 60),
+            createButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -134,6 +117,22 @@ final class HabitViewController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
+        
+        // Настройка высоты navigation bar
+        if let navigationBar = navigationController?.navigationBar {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .systemBackground
+            appearance.titleTextAttributes = [
+                .font: UIFont.systemFont(ofSize: 16, weight: .medium)
+            ]
+            
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            
+            navigationBar.prefersLargeTitles = false
+        }
     }
     
     private func updateCreateButtonState() {
@@ -154,14 +153,88 @@ final class HabitViewController: UIViewController {
         
         let newTracker = Tracker(
             title: title,
-            color: "selection_5", // Default color
-            emoji: "🔥", // Default emoji
+            color: "selection_5",
+            emoji: "🔥",
             schedule: selectedDays,
             isHabit: true
         )
         
         onSave?(newTracker, "Пример категории")
         dismiss(animated: true)
+    }
+}
+
+// MARK: - Custom Table View Cell
+final class OptionTableViewCell: UITableViewCell {
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .ypBlackDay
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let valueLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .ypGray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(white: 0.0, alpha: 0.3)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupUI() {
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(valueLabel)
+        contentView.addSubview(separatorView)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            valueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40),
+            valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
+        ])
+        
+        accessoryType = .disclosureIndicator
+        backgroundColor = .ypBackgroundDay
+    }
+    
+    func configure(title: String, value: String?) {
+        titleLabel.text = title
+        valueLabel.text = value
+        valueLabel.isHidden = value == nil
+    }
+    
+    func setSeparatorHidden(_ hidden: Bool) {
+        separatorView.isHidden = hidden
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.text = nil
+        valueLabel.text = nil
     }
 }
 
@@ -172,31 +245,18 @@ extension HabitViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "OptionCell", for: indexPath)
-        
-        cell.backgroundColor = .ypBackgroundDay
-        cell.accessoryType = .disclosureIndicator
-        cell.selectionStyle = .none
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "OptionCell", for: indexPath) as? OptionTableViewCell else {
+            return UITableViewCell()
+        }
         
         if indexPath.row == 0 {
-            cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = "Пример категории"
+            cell.configure(title: "Категория", value: nil)
         } else {
-            cell.textLabel?.text = "Расписание"
-            let daysText = selectedDays.isEmpty ? "" : selectedDays.map { $0.shortName }.joined(separator: ", ")
-            cell.detailTextLabel?.text = daysText.isEmpty ? nil : daysText
+            let daysText = selectedDays.isEmpty ? nil : selectedDays.map { $0.shortName }.joined(separator: ", ")
+            cell.configure(title: "Расписание", value: daysText)
         }
         
-        // Configure rounded corners
-        if indexPath.row == 0 {
-            cell.layer.masksToBounds = true
-            cell.layer.cornerRadius = 0
-            cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        } else if indexPath.row == 1 {
-            cell.layer.masksToBounds = true
-            cell.layer.cornerRadius = 0
-            cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        }
+        cell.setSeparatorHidden(indexPath.row == 1)
         
         return cell
     }
@@ -209,6 +269,8 @@ extension HabitViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         if indexPath.row == 1 {
             let scheduleVC = ScheduleViewController()
             scheduleVC.selectedDays = selectedDays
