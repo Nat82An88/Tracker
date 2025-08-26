@@ -82,8 +82,20 @@ final class HabitViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
+        setupGestureRecognizer()
     }
     
+    // MARK: - Gesture Recognizer
+       private func setupGestureRecognizer() {
+           let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+           tapGesture.cancelsTouchesInView = false
+           view.addGestureRecognizer(tapGesture)
+       }
+       
+       @objc private func dismissKeyboard() {
+           view.endEditing(true)
+       }
+       
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground

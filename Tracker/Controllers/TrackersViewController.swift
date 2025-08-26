@@ -72,7 +72,20 @@ final class TrackersViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         updateUI()
+        setupGestureRecognizer()
     }
+    
+    // MARK: - Gesture Recognizer
+       private func setupGestureRecognizer() {
+           let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+           tapGesture.cancelsTouchesInView = false
+           view.addGestureRecognizer(tapGesture)
+       }
+       
+       @objc private func dismissKeyboard() {
+           view.endEditing(true)
+           searchBar.resignFirstResponder()
+       }
     
     // MARK: - UI Setup
     private func setupUI() {
