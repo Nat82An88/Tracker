@@ -75,6 +75,13 @@ final class TrackersViewController: UIViewController {
         setupUI()
         updateUI()
         setupGestureRecognizer()
+        removeNavigationBarSeparator()
+    }
+    
+    // MARK: - Navigation Bar Separator
+    private func removeNavigationBarSeparator() {
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     }
     
     // MARK: - Gesture Recognizer
@@ -106,6 +113,7 @@ final class TrackersViewController: UIViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .systemBackground
+        appearance.shadowColor = .clear 
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 17, weight: .bold)
         ]
