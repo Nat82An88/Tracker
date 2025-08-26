@@ -125,7 +125,7 @@ extension ScheduleViewController: UITableViewDataSource {
             separator.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
             separator.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
             separator.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor),
-            separator.heightAnchor.constraint(equalToConstant: 1)
+            separator.heightAnchor.constraint(equalToConstant: 0.5)
         ])
     }
 }
@@ -143,22 +143,19 @@ extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let cornerRadius: CGFloat = 16
         var maskedCorners: CACornerMask = []
+        let totalRows = tableView.numberOfRows(inSection: indexPath.section)
         
-        if indexPath.row == 0 {
+        switch indexPath.row {
+        case 0:
             maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        }
-        
-        if indexPath.row == Weekday.allCases.count - 1 {
+        case totalRows - 1:
             maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        default:
+            break
         }
         
-        if !maskedCorners.isEmpty {
-            cell.layer.maskedCorners = maskedCorners
-            cell.layer.cornerRadius = cornerRadius
-            cell.layer.masksToBounds = true
-        } else {
-            cell.layer.cornerRadius = 0
-            cell.layer.masksToBounds = false
-        }
+        cell.layer.maskedCorners = maskedCorners
+        cell.layer.cornerRadius = !maskedCorners.isEmpty ? cornerRadius : 0
+        cell.layer.masksToBounds = !maskedCorners.isEmpty
     }
 }
