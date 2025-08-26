@@ -73,7 +73,7 @@ final class TrackerCell: UICollectionViewCell {
         self.isCompletedToday = isCompletedToday
         self.completionHandler = completionHandler
         
-        cardView.backgroundColor = UIColor(named: "selection_5")
+        cardView.backgroundColor = UIColor(named: tracker.color)
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title
         countLabel.text = "\(completionCount) дней"
@@ -103,35 +103,29 @@ final class TrackerCell: UICollectionViewCell {
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            // Card View (167x90)
             cardView.topAnchor.constraint(equalTo: contentView.topAnchor),
             cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             cardView.heightAnchor.constraint(equalToConstant: 90),
             
-            // Emoji Label
             emojiLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
             emojiLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
             
-            // Title Label
             titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
             titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
             titleLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12),
             
-            // Quantity View (167x58)
             quantityView.topAnchor.constraint(equalTo: cardView.bottomAnchor),
             quantityView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             quantityView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             quantityView.heightAnchor.constraint(equalToConstant: 58),
             quantityView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            // Count Label
             countLabel.leadingAnchor.constraint(equalTo: quantityView.leadingAnchor, constant: 12),
             countLabel.centerYAnchor.constraint(equalTo: quantityView.centerYAnchor),
             
-            // Complete Button
             completeButton.trailingAnchor.constraint(equalTo: quantityView.trailingAnchor, constant: -12),
             completeButton.centerYAnchor.constraint(equalTo: quantityView.centerYAnchor),
             completeButton.widthAnchor.constraint(equalToConstant: 34),

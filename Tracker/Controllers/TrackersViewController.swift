@@ -6,6 +6,7 @@ final class TrackersViewController: UIViewController {
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     private var filteredCategories: [TrackerCategory] = []
+    private var searchText: String = ""
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
@@ -64,6 +65,7 @@ final class TrackersViewController: UIViewController {
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.layer.cornerRadius = 10
         searchBar.layer.masksToBounds = true
+        searchBar.delegate = self
         return searchBar
     }()
     
@@ -76,16 +78,16 @@ final class TrackersViewController: UIViewController {
     }
     
     // MARK: - Gesture Recognizer
-       private func setupGestureRecognizer() {
-           let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-           tapGesture.cancelsTouchesInView = false
-           view.addGestureRecognizer(tapGesture)
-       }
-       
-       @objc private func dismissKeyboard() {
-           view.endEditing(true)
-           searchBar.resignFirstResponder()
-       }
+    private func setupGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+        searchBar.resignFirstResponder()
+    }
     
     // MARK: - UI Setup
     private func setupUI() {
@@ -114,7 +116,6 @@ final class TrackersViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
-        // Add button
         let addButton = UIBarButtonItem(
             image: UIImage(named: "plus"),
             style: .plain,
@@ -124,7 +125,6 @@ final class TrackersViewController: UIViewController {
         addButton.tintColor = .ypBlackDay
         navigationItem.leftBarButtonItem = addButton
         
-        // DatePicker container
         let datePickerContainer = UIView()
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         datePickerContainer.addSubview(datePicker)
@@ -181,7 +181,7 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - UI Update
     private func updateUI() {
-        filterTrackersBySelectedDate()
+        filterTrackers()
         
         let hasData = filteredCategories.contains { !$0.trackers.isEmpty }
         placeholderStackView.isHidden = hasData
@@ -190,16 +190,27 @@ final class TrackersViewController: UIViewController {
         collectionView.reloadData()
     }
     
-    private func filterTrackersBySelectedDate() {
+    private func filterTrackers() {
         let selectedDate = datePicker.date
         let weekday = Calendar.current.component(.weekday, from: selectedDate)
         
-        filteredCategories = categories.map { category in
+        var dateFilteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
                 tracker.schedule.contains { $0.rawValue == weekday }
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }
+        
+        if !searchText.isEmpty {
+            dateFilteredCategories = dateFilteredCategories.map { category in
+                let filteredTrackers = category.trackers.filter { tracker in
+                    tracker.title.lowercased().contains(searchText.lowercased())
+                }
+                return TrackerCategory(title: category.title, trackers: filteredTrackers)
+            }
+        }
+        
+        filteredCategories = dateFilteredCategories.filter { !$0.trackers.isEmpty }
     }
     
     // MARK: - Actions
@@ -318,11 +329,29 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        return UICollectionReusableView()
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 167, height: 148)
+        let availableWidth = collectionView.frame.width - 16
+        let cellWidth = availableWidth / 2
+        return CGSize(width: cellWidth, height: 148)
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension TrackersViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchText = searchText
+        updateUI()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
