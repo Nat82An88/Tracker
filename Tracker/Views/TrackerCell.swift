@@ -136,11 +136,11 @@ final class TrackerCell: UICollectionViewCell {
     private func updateButtonAppearance() {
         if isCompletedToday {
             completeButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
-            completeButton.tintColor = UIColor(named: "YP_White")
+            completeButton.tintColor = UIColor(resource: .ypWhite)
             completeButton.backgroundColor = cardView.backgroundColor?.withAlphaComponent(0.3)
         } else {
             completeButton.setImage(UIImage(systemName: "plus"), for: .normal)
-            completeButton.tintColor = UIColor(named: "YP_White"); completeButton.backgroundColor = cardView.backgroundColor
+            completeButton.tintColor = UIColor(resource: .ypWhite); completeButton.backgroundColor = cardView.backgroundColor
         }
     }
     

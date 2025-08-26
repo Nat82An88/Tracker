@@ -7,19 +7,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        window = UIWindow(windowScene: windowScene)
+        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.windowScene = windowScene
         
-        showLaunchScreen()
+        showLaunchScreenImmediately()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.showMainApp()
         }
     }
     
-    private func showLaunchScreen() {
+    private func showLaunchScreenImmediately() {
         let launchScreenVC = LaunchScreenViewController()
+        
+        _ = launchScreenVC.view
+        
         window?.rootViewController = launchScreenVC
         window?.makeKeyAndVisible()
+        
+        window?.layoutIfNeeded()
     }
     
     private func showMainApp() {
@@ -30,8 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                           options: .transitionCrossDissolve,
                           animations: {
             self.window?.rootViewController = tabBarController
-        },
-                          completion: nil)
+        }, completion: nil)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {}

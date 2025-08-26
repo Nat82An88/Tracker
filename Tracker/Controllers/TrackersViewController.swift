@@ -125,7 +125,7 @@ final class TrackersViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
         let addButton = UIBarButtonItem(
-            image: UIImage(named: "plus"),
+            image: UIImage(resource: .plus),
             style: .plain,
             target: self,
             action: #selector(addButtonTapped)
