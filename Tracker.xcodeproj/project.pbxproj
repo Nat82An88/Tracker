@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E492323E2E5E5B51009D5487 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E492323D2E5E5B51009D5487 /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		E450C88C2E50865E00577276 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E492323D2E5E5B51009D5487 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 		E450C8832E50865E00577276 = {
 			isa = PBXGroup;
 			children = (
+				E492323D2E5E5B51009D5487 /* LaunchScreen.storyboard */,
 				E450C88E2E50865E00577276 /* Tracker */,
 				E450C88D2E50865E00577276 /* Products */,
 			);
@@ -122,6 +128,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E492323E2E5E5B51009D5487 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

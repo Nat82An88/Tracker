@@ -10,22 +10,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
-        showLaunchScreenImmediately()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.showMainApp()
-        }
+        showMainApp()
+            window?.makeKeyAndVisible()
     }
     
     private func showLaunchScreenImmediately() {
-        let launchScreenVC = LaunchScreenViewController()
-        
-        _ = launchScreenVC.view
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let launchScreenVC = storyboard.instantiateInitialViewController()
         
         window?.rootViewController = launchScreenVC
         window?.makeKeyAndVisible()
-        
-        window?.layoutIfNeeded()
     }
     
     private func showMainApp() {
