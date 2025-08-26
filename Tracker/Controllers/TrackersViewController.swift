@@ -7,6 +7,7 @@ final class TrackersViewController: UIViewController {
     var completedTrackers: [TrackerRecord] = []
     private var filteredCategories: [TrackerCategory] = []
     private var searchText: String = ""
+    private var searchController: UISearchController!
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
@@ -58,17 +59,6 @@ final class TrackersViewController: UIViewController {
         return picker
     }()
     
-    private lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "Поиск"
-        searchBar.searchBarStyle = .minimal
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.layer.cornerRadius = 10
-        searchBar.layer.masksToBounds = true
-        searchBar.delegate = self
-        return searchBar
-    }()
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,14 +83,13 @@ final class TrackersViewController: UIViewController {
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
-        searchBar.resignFirstResponder()
+        searchController.searchBar.resignFirstResponder()
     }
     
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
         setupNavigationBar()
-        setupSearchBar()
         setupCollectionView()
         setupPlaceholder()
     }
@@ -147,24 +136,26 @@ final class TrackersViewController: UIViewController {
         ])
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePickerContainer)
+        
+        setupSearchController()
     }
     
-    private func setupSearchBar() {
-        view.addSubview(searchBar)
-        
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchBar.heightAnchor.constraint(equalToConstant: 36)
-        ])
+    private func setupSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.searchTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        searchController.searchBar.searchTextField.textColor = .gray
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     private func setupCollectionView() {
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)

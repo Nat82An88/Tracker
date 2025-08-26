@@ -29,6 +29,8 @@ final class TabBarController: UITabBarController {
         ]
         UITabBarItem.appearance().setTitleTextAttributes(attributes, for: .normal)
         
+        statisticsVC.tabBarItem.isEnabled = false
+        
         viewControllers = [trackersNavVC, statisticsVC]
         
         tabBar.backgroundColor = .systemBackground
