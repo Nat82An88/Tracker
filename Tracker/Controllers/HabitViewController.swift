@@ -113,7 +113,7 @@ final class HabitViewController: UIViewController {
         
         contentView.addSubview(titleTextField)
         contentView.addSubview(optionsTableView)
-        contentView.addSubview(buttonsStackView)
+        view.addSubview(buttonsStackView)
         
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(createButton)
@@ -140,11 +140,10 @@ final class HabitViewController: UIViewController {
             optionsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             optionsTableView.heightAnchor.constraint(equalToConstant: 150),
             
-            buttonsStackView.topAnchor.constraint(equalTo: optionsTableView.bottomAnchor, constant: 24),
-            buttonsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
-            buttonsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+            buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -213,6 +212,7 @@ final class HabitViewController: UIViewController {
         scrollView.contentInset = contentInsets
         scrollView.scrollIndicatorInsets = contentInsets
         
+        // Прокручиваем scrollView чтобы показать активное поле
         if titleTextField.isFirstResponder {
             let rect = titleTextField.convert(titleTextField.bounds, to: scrollView)
             scrollView.scrollRectToVisible(rect, animated: true)
