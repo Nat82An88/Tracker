@@ -13,6 +13,7 @@ final class ScheduleViewController: UIViewController {
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.backgroundColor = .ypBackgroundDay
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         tableView.dataSource = self
         tableView.delegate = self
@@ -61,27 +62,20 @@ final class ScheduleViewController: UIViewController {
             doneButton.heightAnchor.constraint(equalToConstant: 60)
         ])
         
-        tableView.layer.masksToBounds = true
+        tableView.tableFooterView = UIView()
     }
     
     private func setupNavigationBar() {
         title = "Расписание"
         navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.ypBlackDay
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .medium),
+            NSAttributedString.Key.foregroundColor: UIColor.ypBlackDay
         ]
         
         navigationItem.hidesBackButton = true
         
-        if let navigationBar = navigationController?.navigationBar {
-            let statusBarHeight: CGFloat = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
-            let additionalHeight: CGFloat = 114 - (navigationBar.frame.height + statusBarHeight)
-            if additionalHeight > 0 {
-                navigationBar.frame = CGRect(x: 0, y: 0,
-                                             width: navigationBar.frame.width,
-                                             height: navigationBar.frame.height + additionalHeight)
-            }
-        }
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     }
     
     // MARK: - Actions
@@ -115,18 +109,14 @@ extension ScheduleViewController: UITableViewDataSource {
         }
         
         if indexPath.row == 0 {
-            cell.layer.masksToBounds = true
-            cell.layer.cornerRadius = 0
-            cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         } else if indexPath.row == Weekday.allCases.count - 1 {
-            cell.layer.masksToBounds = true
-            cell.layer.cornerRadius = 0
-            cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         } else {
-            cell.layer.masksToBounds = false
-            cell.layer.cornerRadius = 0
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         }
         
+        cell.backgroundColor = .ypBackgroundDay
         return cell
     }
 }
@@ -139,5 +129,27 @@ extension ScheduleViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cornerRadius: CGFloat = 16
+        var maskedCorners: CACornerMask = []
+        
+        if indexPath.row == 0 {
+            maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
+        
+        if indexPath.row == Weekday.allCases.count - 1 {
+            maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        }
+        
+        if !maskedCorners.isEmpty {
+            cell.layer.maskedCorners = maskedCorners
+            cell.layer.cornerRadius = cornerRadius
+            cell.layer.masksToBounds = true
+        } else {
+            cell.layer.cornerRadius = 0
+            cell.layer.masksToBounds = false
+        }
     }
 }
