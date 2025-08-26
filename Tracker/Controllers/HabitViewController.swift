@@ -126,20 +126,13 @@ final class HabitViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.titleView = {
-            let label = UILabel()
-            label.text = "Новая привычка"
-            label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-            label.textColor = .ypBlackDay
-            label.textAlignment = .center
-            label.sizeToFit()
-            return label
-        }()
+        navigationItem.title = "Новая привычка"
         
         if let navigationBar = navigationController?.navigationBar {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .systemBackground
+            appearance.shadowColor = .clear
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.compactAppearance = appearance
@@ -182,79 +175,6 @@ final class HabitViewController: UIViewController {
         updateCreateButtonState()
     }
 }
-// MARK: - Custom Table View Cell
-final class OptionTableViewCell: UITableViewCell {
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .ypBlackDay
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let valueLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .ypGray
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let separatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(white: 0.0, alpha: 0.3)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setupUI() {
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(valueLabel)
-        contentView.addSubview(separatorView)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            
-            valueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40),
-            valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            
-            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
-        ])
-        
-        accessoryType = .disclosureIndicator
-        backgroundColor = .ypBackgroundDay
-    }
-    
-    func configure(title: String, value: String?) {
-        titleLabel.text = title
-        valueLabel.text = value
-        valueLabel.isHidden = value == nil
-    }
-    
-    func setSeparatorHidden(_ hidden: Bool) {
-        separatorView.isHidden = hidden
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel.text = nil
-        valueLabel.text = nil
-    }
-}
 
 // MARK: - UITableViewDataSource
 extension HabitViewController: UITableViewDataSource {
@@ -268,13 +188,11 @@ extension HabitViewController: UITableViewDataSource {
         }
         
         if indexPath.row == 0 {
-            cell.configure(title: "Категория", value: nil)
+            cell.configure(title: "Категория", subtitle: nil)
         } else {
             let daysText = selectedDays.isEmpty ? nil : selectedDays.map { $0.shortName }.joined(separator: ", ")
-            cell.configure(title: "Расписание", value: daysText)
+            cell.configure(title: "Расписание", subtitle: daysText)
         }
-        
-        cell.setSeparatorHidden(indexPath.row == 1)
         
         return cell
     }
@@ -284,6 +202,14 @@ extension HabitViewController: UITableViewDataSource {
 extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.width, bottom: 0, right: 0)
+        } else {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
