@@ -8,6 +8,12 @@ final class TabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
+        guard view.frame.size.height > 0, view.frame.size.width > 0 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.setupTabBar()
+            }
+            return
+        }
         let trackersNavVC = UINavigationController(rootViewController: TrackersViewController())
         let statisticsVC = StatisticsViewController()
         
@@ -57,14 +63,21 @@ final class TabBarController: UITabBarController {
     
     private func adjustTabBarHeight() {
         let newHeight: CGFloat = 84
+        guard newHeight > 0, view.frame.size.height > 0 else { return }
         var newFrame = tabBar.frame
         newFrame.size.height = newHeight
         newFrame.origin.y = view.frame.size.height - newHeight
         tabBar.frame = newFrame
     }
     
+    private var hasAdjustedTabBar = false
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        adjustTabBarHeight()
+        
+        if !hasAdjustedTabBar && view.frame.size.height > 0 {
+            adjustTabBarHeight()
+            hasAdjustedTabBar = true
+        }
     }
 }

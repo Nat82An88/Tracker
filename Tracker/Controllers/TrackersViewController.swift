@@ -337,9 +337,9 @@ extension TrackersViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let availableWidth = collectionView.frame.width - 16
+        let availableWidth = max(0, collectionView.frame.width - 16)
         let cellWidth = availableWidth / 2
-        return CGSize(width: cellWidth, height: 148)
+        return CGSize(width: max(0, cellWidth), height: max(0, 148))
     }
 }
 

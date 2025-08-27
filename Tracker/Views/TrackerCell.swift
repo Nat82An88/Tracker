@@ -145,6 +145,8 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     private func daysText(for count: Int) -> String {
+        guard count >= 0 else { return "дней" }
+        
         switch count % 10 {
         case 1 where count % 100 != 11:
             return "день"
