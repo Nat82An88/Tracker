@@ -10,7 +10,7 @@ final class HabitViewController: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
-        textField.backgroundColor = .ypBackgroundDay
+        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -51,11 +51,11 @@ final class HabitViewController: UIViewController {
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
-        button.setTitleColor(.ypRed, for: .normal)
-        button.backgroundColor = .white
+        button.setTitleColor(UIColor(resource: .ypRed), for: .normal)
+        button.backgroundColor = .systemBackground
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.ypRed.cgColor
+        button.layer.borderColor = UIColor(resource: .ypRed).cgColor
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.titleLabel?.textAlignment = .center
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -67,7 +67,7 @@ final class HabitViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .ypGray
+        button.backgroundColor = UIColor(resource: .ypGray)
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -145,7 +145,7 @@ final class HabitViewController: UIViewController {
         let isScheduleSelected = !selectedDays.isEmpty
         
         createButton.isEnabled = isTitleValid && isScheduleSelected
-        createButton.backgroundColor = createButton.isEnabled ? .ypBlackDay : .ypGray
+        createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions

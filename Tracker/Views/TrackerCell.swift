@@ -8,8 +8,7 @@ final class TrackerCell: UICollectionViewCell {
         let view = UIView()
         view.layer.cornerRadius = 16
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor(named: "YP_Gray")?.cgColor
-        view.backgroundColor = UIColor(named: "selection_5")
+        view.layer.borderColor = UIColor(resource: .ypGray).cgColor
         return view
     }()
     
@@ -26,7 +25,7 @@ final class TrackerCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(named: "YP_White")
+        label.textColor = UIColor(resource: .ypWhite)
         label.numberOfLines = 2
         return label
     }()
@@ -40,7 +39,7 @@ final class TrackerCell: UICollectionViewCell {
     private let countLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(named: "YP_Black[day]")
+        label.textColor = UIColor(resource: .ypBlackDay)
         return label
     }()
     
@@ -72,7 +71,6 @@ final class TrackerCell: UICollectionViewCell {
         self.trackerId = tracker.id
         self.isCompletedToday = isCompletedToday
         self.completionHandler = completionHandler
-        
         cardView.backgroundColor = UIColor(named: tracker.color)
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title

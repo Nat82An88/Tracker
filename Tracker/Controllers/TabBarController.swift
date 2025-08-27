@@ -19,13 +19,13 @@ final class TabBarController: UITabBarController {
         
         trackersNavVC.tabBarItem = UITabBarItem(
             title: "Трекеры",
-            image: UIImage(named: "tracker_logo"),
+            image: UIImage(resource: .trackerLogo),
             selectedImage: nil
         )
         
         statisticsVC.tabBarItem = UITabBarItem(
             title: "Статистика",
-            image: UIImage(named: "statistic_logo"),
+            image: UIImage(resource: .statisticLogo),
             selectedImage: nil
         )
         
@@ -40,7 +40,7 @@ final class TabBarController: UITabBarController {
         viewControllers = [trackersNavVC, statisticsVC]
         
         tabBar.backgroundColor = .systemBackground
-        tabBar.tintColor = .ypBlue
+        tabBar.tintColor = UIColor(resource: .ypBlue)
         
         DispatchQueue.main.async {
             self.adjustTabBarHeight()
@@ -49,7 +49,7 @@ final class TabBarController: UITabBarController {
     
     private func addTabBarSeparator() {
         let separator = UIView()
-        separator.backgroundColor = .systemGray5
+        separator.backgroundColor = UIColor(resource: .ypGray)
         separator.translatesAutoresizingMaskIntoConstraints = false
         tabBar.addSubview(separator)
         

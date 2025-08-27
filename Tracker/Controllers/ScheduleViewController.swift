@@ -12,7 +12,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .ypBackgroundDay
+        tableView.backgroundColor = UIColor(resource: .ypBackgroundDay)
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         tableView.dataSource = self
         tableView.delegate = self
@@ -24,7 +24,7 @@ final class ScheduleViewController: UIViewController {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "Готово"
         configuration.baseForegroundColor = .white
-        configuration.baseBackgroundColor = .ypBlackDay
+        configuration.baseBackgroundColor = UIColor(resource: .ypBlackDay)
         configuration.cornerStyle = .fixed
         configuration.background.cornerRadius = 16
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 19, leading: 32, bottom: 19, trailing: 32)
@@ -111,13 +111,13 @@ extension ScheduleViewController: UITableViewDataSource {
             addSeparator(to: cell)
         }
         
-        cell.backgroundColor = .ypBackgroundDay
+        cell.backgroundColor = UIColor(resource: .ypBackgroundDay)
         return cell
     }
     
     private func addSeparator(to cell: UITableViewCell) {
         let separator = UIView()
-        separator.backgroundColor = .ypGray
+        separator.backgroundColor = UIColor(resource: .ypGray)
         separator.translatesAutoresizingMaskIntoConstraints = false
         cell.contentView.addSubview(separator)
         

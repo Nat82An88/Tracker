@@ -45,7 +45,7 @@ final class TrackersViewController: UIViewController {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .ypBlackDay
+        label.textColor = UIColor(resource: .ypBlackDay)
         label.textAlignment = .center
         return label
     }()
@@ -119,7 +119,7 @@ final class TrackersViewController: UIViewController {
             target: self,
             action: #selector(addButtonTapped)
         )
-        addButton.tintColor = .ypBlackDay
+        addButton.tintColor = UIColor(resource: .ypBlackDay)
         navigationItem.leftBarButtonItem = addButton
         
         let datePickerContainer = UIView()

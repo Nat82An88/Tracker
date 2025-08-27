@@ -12,7 +12,7 @@ final class ScheduleCell: UITableViewCell {
     
     private lazy var switchControl: UISwitch = {
         let switchControl = UISwitch()
-        switchControl.onTintColor = .ypBlue
+        switchControl.onTintColor = UIColor(resource: .ypBlue)
         switchControl.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         switchControl.translatesAutoresizingMaskIntoConstraints = false
         return switchControl

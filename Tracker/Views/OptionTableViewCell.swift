@@ -5,7 +5,7 @@ final class OptionTableViewCell: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .ypBlackDay
+        label.textColor = UIColor(resource: .ypBlackDay)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -13,7 +13,7 @@ final class OptionTableViewCell: UITableViewCell {
     private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .ypGray
+        label.textColor = UIColor(resource: .ypGray)
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -51,7 +51,7 @@ final class OptionTableViewCell: UITableViewCell {
         ])
         
         accessoryType = .disclosureIndicator
-        backgroundColor = .ypBackgroundDay
+        backgroundColor = UIColor(resource: .ypBackgroundDay)
         
         NSLayoutConstraint.activate([
             contentView.heightAnchor.constraint(equalToConstant: 75)
