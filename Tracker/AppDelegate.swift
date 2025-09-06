@@ -7,12 +7,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Core Data stack
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TrackerDataModel")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
-        })
+        }
+        container.viewContext.automaticallyMergesChangesFromParent = true
         return container
+    }()
+    
+    // MARK: - Store Properties
+    private(set) lazy var trackerCategoryStore: TrackerCategoryStore = {
+        TrackerCategoryStore(context: persistentContainer.viewContext)
+    }()
+    
+    private(set) lazy var trackerStore: TrackerStore = {
+        TrackerStore(context: persistentContainer.viewContext)
+    }()
+    
+    private(set) lazy var trackerRecordStore: TrackerRecordStore = {
+        TrackerRecordStore(context: persistentContainer.viewContext)
     }()
     
     // MARK: - App Lifecycle
@@ -24,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // MARK: UISceneSession Lifecycle
-    
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }

@@ -3,11 +3,14 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     // MARK: - Properties
-    var categories: [TrackerCategory] = []
-    var completedTrackers: [TrackerRecord] = []
+    private var categories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
     private var filteredCategories: [TrackerCategory] = []
     private var searchText: String = ""
     private var searchController: UISearchController!
+    private var trackerStore: TrackerStore!
+    private var trackerCategoryStore: TrackerCategoryStore!
+    private var trackerRecordStore: TrackerRecordStore!
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
@@ -62,10 +65,92 @@ final class TrackersViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("AppDelegate not found")
+        }
+        
+        trackerStore = appDelegate.trackerStore
+        trackerCategoryStore = appDelegate.trackerCategoryStore
+        trackerRecordStore = appDelegate.trackerRecordStore
+        
+        loadData()
         setupUI()
         updateUI()
         setupGestureRecognizer()
         removeNavigationBarSeparator()
+    }
+    
+    // MARK: - Data Loading
+    private func loadData() {
+        do {
+            categories = try trackerCategoryStore.fetchAllCategories()
+            completedTrackers = try trackerRecordStore.fetchAllRecords()
+        } catch {
+            print("Error loading data: \(error)")
+        }
+    }
+    
+    // MARK: - Tracker Completion Methods
+    private func completeTracker(with id: UUID) {
+        let selectedDate = datePicker.date
+        let today = Date()
+        
+        if selectedDate > today {
+            print("Нельзя отмечать трекеры для будущих дат")
+            return
+        }
+        
+        let record = TrackerRecord(id: id, date: selectedDate)
+        
+        do {
+            try trackerRecordStore.addRecord(record)
+            completedTrackers.append(record)
+            updateUI()
+        } catch {
+            print("Error completing tracker: \(error)")
+        }
+    }
+    
+    private func uncompleteTracker(with id: UUID) {
+        let selectedDate = datePicker.date
+        
+        do {
+            try trackerRecordStore.removeRecord(with: id, date: selectedDate)
+            completedTrackers.removeAll {
+                $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
+            }
+            updateUI()
+        } catch {
+            print("Error uncompleting tracker: \(error)")
+        }
+    }
+    
+    private func isTrackerCompletedToday(_ id: UUID) -> Bool {
+        let selectedDate = datePicker.date
+        return completedTrackers.contains {
+            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
+        }
+    }
+    
+    private func getCompletionCount(for trackerId: UUID) -> Int {
+        do {
+            return try trackerRecordStore.completionCount(for: trackerId)
+        } catch {
+            print("Error getting completion count: \(error)")
+            return 0
+        }
+    }
+    
+    // MARK: - Add Tracker
+    private func addTracker(_ tracker: Tracker, toCategory categoryTitle: String) {
+        do {
+            try trackerStore.addTracker(tracker, to: categoryTitle)
+            loadData()
+            updateUI()
+        } catch {
+            print("Error adding tracker: \(error)")
+        }
     }
     
     // MARK: - Navigation Bar Separator
@@ -223,68 +308,8 @@ final class TrackersViewController: UIViewController {
         present(navController, animated: true)
     }
     
-    private func addTracker(_ tracker: Tracker, toCategory categoryTitle: String) {
-        let updatedCategories: [TrackerCategory]
-        
-        if let existingCategoryIndex = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            let existingCategory = categories[existingCategoryIndex]
-            let updatedTrackers = existingCategory.trackers + [tracker]
-            let updatedCategory = TrackerCategory(
-                title: existingCategory.title,
-                trackers: updatedTrackers
-            )
-            
-            updatedCategories = categories.enumerated().map { index, category in
-                index == existingCategoryIndex ? updatedCategory : category
-            }
-        } else {
-            let newCategory = TrackerCategory(
-                title: categoryTitle,
-                trackers: [tracker]
-            )
-            updatedCategories = categories + [newCategory]
-        }
-        
-        categories = updatedCategories
-        updateUI()
-    }
-    
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
         updateUI()
-    }
-    
-    // MARK: - Tracker Completion Methods
-    private func completeTracker(with id: UUID) {
-        let selectedDate = datePicker.date
-        let today = Date()
-        
-        if selectedDate > today {
-            print("Нельзя отмечать трекеры для будущих дат")
-            return
-        }
-        
-        let record = TrackerRecord(id: id, date: selectedDate)
-        completedTrackers.append(record)
-        updateUI()
-    }
-    
-    private func uncompleteTracker(with id: UUID) {
-        let selectedDate = datePicker.date
-        completedTrackers.removeAll {
-            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
-        }
-        updateUI()
-    }
-    
-    private func isTrackerCompletedToday(_ id: UUID) -> Bool {
-        let selectedDate = datePicker.date
-        return completedTrackers.contains {
-            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
-        }
-    }
-    
-    private func getCompletionCount(for trackerId: UUID) -> Int {
-        return completedTrackers.filter { $0.id == trackerId }.count
     }
     
     func handleTrackerCompletion(_ trackerId: UUID, _ isCompleted: Bool) {

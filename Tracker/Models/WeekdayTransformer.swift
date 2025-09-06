@@ -10,31 +10,17 @@ final class WeekdayArrayTransformer: ValueTransformer {
     }
     
     override class func transformedValueClass() -> AnyClass {
-        return NSData.self
+        return NSArray.self
     }
     
     override func transformedValue(_ value: Any?) -> Any? {
         guard let weekdays = value as? [Weekday] else { return nil }
-        
-        do {
-            let data = try JSONEncoder().encode(weekdays)
-            return data as NSData
-        } catch {
-            print("Error transforming weekdays: \(error)")
-            return nil
-        }
+        return weekdays.map { $0.rawValue } as NSArray
     }
     
     override func reverseTransformedValue(_ value: Any?) -> Any? {
-        guard let data = value as? Data else { return nil }
-        
-        do {
-            let weekdays = try JSONDecoder().decode([Weekday].self, from: data)
-            return weekdays
-        } catch {
-            print("Error reverse transforming weekdays: \(error)")
-            return nil
-        }
+        guard let intArray = value as? [Int] else { return nil }
+        return intArray.compactMap { Weekday(rawValue: $0) }
     }
     
     static func register() {
