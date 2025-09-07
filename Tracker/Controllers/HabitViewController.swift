@@ -206,8 +206,8 @@ final class HabitViewController: UIViewController {
             emojiLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             emojiCollectionView.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 24),
-            emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 1),
-            emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1),
+            emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 204),
             
             colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 40),
@@ -215,8 +215,8 @@ final class HabitViewController: UIViewController {
             colorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             colorCollectionView.topAnchor.constraint(equalTo: colorLabel.bottomAnchor, constant: 24),
-            colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 1),
-            colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1),
+            colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 204),
             
             buttonsStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 40),
@@ -366,7 +366,7 @@ extension HabitViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        let totalWidth = collectionView.bounds.width
+        let totalWidth = collectionView.bounds.width - 32
         let itemsPerRow: CGFloat = 6
         let totalSpacing = totalWidth - (itemsPerRow * 52)
         return totalSpacing / (itemsPerRow - 1)
