@@ -1,19 +1,49 @@
 import CoreData
 
-final class TrackerCategoryStore {
+final class TrackerCategoryStore: NSObject {
     
     private let context: NSManagedObjectContext
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>!
+    
+    var onCategoriesDidChange: (([TrackerCategory]) -> Void)?
     
     init(context: NSManagedObjectContext) {
         self.context = context
+        super.init()
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Fetched Results Controller Setup
+    private func setupFetchedResultsController() {
+        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+            notifyCategoriesChanged()
+        } catch {
+            print("Failed to fetch categories: \(error)")
+        }
+    }
+    
+    private func notifyCategoriesChanged() {
+        let categories = (fetchedResultsController.fetchedObjects ?? []).compactMap { makeCategory(from: $0) }
+        onCategoriesDidChange?(categories)
     }
     
     // MARK: - Public Methods
     
     func fetchAllCategories() throws -> [TrackerCategory] {
-        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
-        let categoriesCoreData = try context.fetch(request)
-        return categoriesCoreData.compactMap { makeCategory(from: $0) }
+        return (fetchedResultsController.fetchedObjects ?? []).compactMap { makeCategory(from: $0) }
     }
     
     func addCategory(_ category: TrackerCategory) throws {
@@ -90,5 +120,11 @@ final class TrackerCategoryStore {
         
         let scheduleArray = tracker.schedule.map { $0.rawValue } as NSArray
         trackerCoreData.schedule = scheduleArray
+    }
+}
+// MARK: - NSFetchedResultsControllerDelegate
+extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        notifyCategoriesChanged()
     }
 }

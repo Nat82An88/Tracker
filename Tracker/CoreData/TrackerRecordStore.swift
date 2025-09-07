@@ -1,19 +1,52 @@
 import CoreData
 
-final class TrackerRecordStore {
+final class TrackerRecordStore: NSObject {
     
     private let context: NSManagedObjectContext
+    private var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>!
+    
+    var onRecordsDidChange: (([TrackerRecord]) -> Void)?
     
     init(context: NSManagedObjectContext) {
         self.context = context
+        super.init()
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Fetched Results Controller Setup
+    private func setupFetchedResultsController() {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: false),
+            NSSortDescriptor(key: "id", ascending: true)
+        ]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+            notifyRecordsChanged()
+        } catch {
+            print("Failed to fetch records: \(error)")
+        }
+    }
+    
+    private func notifyRecordsChanged() {
+        let records = (fetchedResultsController.fetchedObjects ?? []).compactMap { makeRecord(from: $0) }
+        onRecordsDidChange?(records)
     }
     
     // MARK: - Public Methods
     
     func fetchAllRecords() throws -> [TrackerRecord] {
-        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
-        let recordsCoreData = try context.fetch(request)
-        return recordsCoreData.compactMap { makeRecord(from: $0) }
+        return (fetchedResultsController.fetchedObjects ?? []).compactMap { makeRecord(from: $0) }
     }
     
     func addRecord(_ record: TrackerRecord) throws {
@@ -66,5 +99,12 @@ final class TrackerRecordStore {
     private func updateRecord(_ recordCoreData: TrackerRecordCoreData, with record: TrackerRecord) {
         recordCoreData.id = record.id
         recordCoreData.date = record.date
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        notifyRecordsChanged()
     }
 }

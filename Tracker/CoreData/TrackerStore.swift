@@ -1,19 +1,49 @@
 import CoreData
 
-final class TrackerStore {
+final class TrackerStore: NSObject {
     
     private let context: NSManagedObjectContext
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    
+    var onTrackersDidChange: (([Tracker]) -> Void)?
     
     init(context: NSManagedObjectContext) {
         self.context = context
+        super.init()
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Fetched Results Controller Setup
+    private func setupFetchedResultsController() {
+        let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+            notifyTrackersChanged()
+        } catch {
+            print("Failed to fetch trackers: \(error)")
+        }
+    }
+    
+    private func notifyTrackersChanged() {
+        let trackers = (fetchedResultsController.fetchedObjects ?? []).compactMap { makeTracker(from: $0) }
+        onTrackersDidChange?(trackers)
     }
     
     // MARK: - Public Methods
     
     func fetchAllTrackers() throws -> [Tracker] {
-        let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
-        let trackersCoreData = try context.fetch(request)
-        return trackersCoreData.compactMap { makeTracker(from: $0) }
+        return (fetchedResultsController.fetchedObjects ?? []).compactMap { makeTracker(from: $0) }
     }
     
     func addTracker(_ tracker: Tracker, to categoryTitle: String) throws {
@@ -78,5 +108,12 @@ final class TrackerStore {
         
         let scheduleArray = tracker.schedule.map { $0.rawValue } as NSArray
         trackerCoreData.schedule = scheduleArray
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension TrackerStore: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        notifyTrackersChanged()
     }
 }

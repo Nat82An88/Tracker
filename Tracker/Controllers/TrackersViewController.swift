@@ -74,11 +74,26 @@ final class TrackersViewController: UIViewController {
         trackerCategoryStore = appDelegate.trackerCategoryStore
         trackerRecordStore = appDelegate.trackerRecordStore
         
+        setupStoreObservers()
+        
         loadData()
         setupUI()
         updateUI()
         setupGestureRecognizer()
         removeNavigationBarSeparator()
+    }
+    
+    // MARK: - Store Observers
+    private func setupStoreObservers() {
+        trackerCategoryStore.onCategoriesDidChange = { [weak self] categories in
+            self?.categories = categories
+            self?.updateUI()
+        }
+        
+        trackerRecordStore.onRecordsDidChange = { [weak self] records in
+            self?.completedTrackers = records
+            self?.updateUI()
+        }
     }
     
     // MARK: - Data Loading
