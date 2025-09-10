@@ -7,8 +7,7 @@ final class TrackerCell: UICollectionViewCell {
     private let cardView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor(resource: .ypGray).cgColor
+        view.layer.masksToBounds = true
         return view
     }()
     
