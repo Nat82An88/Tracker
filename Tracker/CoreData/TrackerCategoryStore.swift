@@ -78,8 +78,14 @@ final class TrackerCategoryStore: NSObject {
             }
             
             var schedule: [Weekday] = []
-            if let scheduleArray = trackerCoreData.schedule as? [Int] {
-                schedule = scheduleArray.compactMap { Weekday(rawValue: $0) }
+            if let scheduleData = trackerCoreData.schedule {
+                do {
+                    let decoder = JSONDecoder()
+                    let rawValues = try decoder.decode([Int].self, from: scheduleData)
+                    schedule = rawValues.compactMap { Weekday(rawValue: $0) }
+                } catch {
+                    print("Error decoding schedule: \(error)")
+                }
             }
             
             return Tracker(
@@ -118,10 +124,18 @@ final class TrackerCategoryStore: NSObject {
         trackerCoreData.emoji = tracker.emoji
         trackerCoreData.isHabit = tracker.isHabit
         
-        let scheduleArray = tracker.schedule.map { $0.rawValue } as NSArray
-        trackerCoreData.schedule = scheduleArray
+        let rawValues = tracker.schedule.map { $0.rawValue }
+        do {
+            let encoder = JSONEncoder()
+            let scheduleData = try encoder.encode(rawValues)
+            trackerCoreData.schedule = scheduleData
+        } catch {
+            print("Error encoding schedule: \(error)")
+            trackerCoreData.schedule = nil
+        }
     }
 }
+
 // MARK: - NSFetchedResultsControllerDelegate
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

@@ -270,6 +270,8 @@ final class HabitViewController: UIViewController {
             isHabit: true
         )
         
+        print("Creating tracker: '\(title)' with schedule: \(selectedDays.map { $0.rawValue })")
+        
         onSave?(newTracker, "Пример категории")
         dismiss(animated: true)
     }

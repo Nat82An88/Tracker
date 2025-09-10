@@ -81,6 +81,9 @@ final class TrackersViewController: UIViewController {
         updateUI()
         setupGestureRecognizer()
         removeNavigationBarSeparator()
+        
+        print("Current datePicker date: \(datePicker.date)")
+        print("Current weekday: \(Calendar.current.component(.weekday, from: datePicker.date))")
     }
     
     // MARK: - Store Observers
@@ -101,6 +104,7 @@ final class TrackersViewController: UIViewController {
         do {
             categories = try trackerCategoryStore.fetchAllCategories()
             completedTrackers = try trackerRecordStore.fetchAllRecords()
+            print("DEBUG: Loaded \(categories.count) categories, \(categories.flatMap { $0.trackers }.count) trackers, \(completedTrackers.count) records")
         } catch {
             print("Error loading data: \(error)")
         }
@@ -161,6 +165,7 @@ final class TrackersViewController: UIViewController {
     private func addTracker(_ tracker: Tracker, toCategory categoryTitle: String) {
         do {
             try trackerStore.addTracker(tracker, to: categoryTitle)
+            print("DEBUG: Tracker added successfully")
             loadData()
             updateUI()
         } catch {
@@ -293,9 +298,13 @@ final class TrackersViewController: UIViewController {
         let selectedDate = datePicker.date
         let weekday = Calendar.current.component(.weekday, from: selectedDate)
         
+        print("Filtering for date: \(selectedDate), weekday: \(weekday)")
+        
         var dateFilteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
-                tracker.schedule.contains { $0.rawValue == weekday }
+                let containsWeekday = tracker.schedule.contains { $0.rawValue == weekday }
+                print("Tracker '\(tracker.title)' schedule: \(tracker.schedule.map { $0.rawValue }), contains weekday \(weekday): \(containsWeekday)")
+                return containsWeekday
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }
@@ -310,6 +319,11 @@ final class TrackersViewController: UIViewController {
         }
         
         filteredCategories = dateFilteredCategories.filter { !$0.trackers.isEmpty }
+        
+        print("Final filtered categories: \(filteredCategories.count)")
+        for category in filteredCategories {
+            print("Category '\(category.title)': \(category.trackers.count) trackers")
+        }
     }
     
     // MARK: - Actions
