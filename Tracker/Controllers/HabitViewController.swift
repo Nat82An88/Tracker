@@ -323,11 +323,14 @@ extension HabitViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        if indexPath.row == 0 {
+        switch indexPath.row {
+        case 0:
             cell.configure(title: "Категория", subtitle: nil)
-        } else {
+        case 1:
             let daysText = selectedDays.isEmpty ? nil : selectedDays.map { $0.shortName }.joined(separator: ", ")
             cell.configure(title: "Расписание", subtitle: daysText)
+        default:
+            break
         }
         
         return cell
@@ -341,9 +344,10 @@ extension HabitViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+        switch indexPath.row {
+        case tableView.numberOfRows(inSection: indexPath.section) - 1:
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.width, bottom: 0, right: 0)
-        } else {
+        default:
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         }
     }
@@ -351,7 +355,8 @@ extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if indexPath.row == 1 {
+        switch indexPath.row {
+        case 1:
             let scheduleVC = ScheduleViewController()
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDaysSelected = { [weak self] days in
@@ -360,6 +365,8 @@ extension HabitViewController: UITableViewDelegate {
                 self?.updateCreateButtonState()
             }
             navigationController?.pushViewController(scheduleVC, animated: true)
+        default:
+            break
         }
     }
 }
@@ -367,24 +374,36 @@ extension HabitViewController: UITableViewDelegate {
 // MARK: - UICollectionViewDataSource
 extension HabitViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == emojiCollectionView {
+        switch collectionView {
+        case emojiCollectionView:
             return emojis.count
-        } else {
+        case colorCollectionView:
             return colors.count
+        default:
+            return 0
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == emojiCollectionView {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EmojiCell", for: indexPath) as! EmojiCell
+        switch collectionView {
+        case emojiCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EmojiCell", for: indexPath) as? EmojiCell else {
+                return UICollectionViewCell()
+            }
             let emoji = emojis[indexPath.item]
             cell.configure(with: emoji, isSelected: emoji == selectedEmoji)
             return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCell", for: indexPath) as! ColorCell
+            
+        case colorCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCell", for: indexPath) as? ColorCell else {
+                return UICollectionViewCell()
+            }
             let colorName = colors[indexPath.item]
             cell.configure(with: colorName, isSelected: colorName == selectedColor)
             return cell
+            
+        default:
+            return UICollectionViewCell()
         }
     }
 }
@@ -411,10 +430,13 @@ extension HabitViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == emojiCollectionView {
+        switch collectionView {
+        case emojiCollectionView:
             selectedEmoji = emojis[indexPath.item]
-        } else {
+        case colorCollectionView:
             selectedColor = colors[indexPath.item]
+        default:
+            break
         }
         collectionView.reloadData()
         updateCreateButtonState()

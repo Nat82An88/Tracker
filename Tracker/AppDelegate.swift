@@ -4,30 +4,17 @@ import CoreData
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    // MARK: - Core Data stack
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "TrackerDataModel")
-        container.loadPersistentStores { storeDescription, error in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-            print("Database URL: \(storeDescription.url?.absoluteString ?? "unknown")")
-        }
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        return container
-    }()
-    
     // MARK: - Store Properties
     private(set) lazy var trackerCategoryStore: TrackerCategoryStore = {
-        TrackerCategoryStore(context: persistentContainer.viewContext)
+        TrackerCategoryStore(context: CoreDataManager.shared.viewContext)
     }()
     
     private(set) lazy var trackerStore: TrackerStore = {
-        TrackerStore(context: persistentContainer.viewContext)
+        TrackerStore(context: CoreDataManager.shared.viewContext)
     }()
     
     private(set) lazy var trackerRecordStore: TrackerRecordStore = {
-        TrackerRecordStore(context: persistentContainer.viewContext)
+        TrackerRecordStore(context: CoreDataManager.shared.viewContext)
     }()
     
     // MARK: - App Lifecycle
@@ -50,20 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        saveContext()
-    }
-    
-    // MARK: - Core Data Saving support
-    func saveContext() {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-                print("Context saved successfully")
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
+        CoreDataManager.shared.saveContext()
     }
 }
