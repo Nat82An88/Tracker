@@ -11,6 +11,9 @@ final class HabitViewController: UIViewController {
     private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     private let colors = (1...18).map { "selection_\($0)" }
     
+    private var emojiCollectionHeightConstraint: NSLayoutConstraint!
+    private var colorCollectionHeightConstraint: NSLayoutConstraint!
+    
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
@@ -55,7 +58,8 @@ final class HabitViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 5
-        layout.minimumLineSpacing = 0
+        layout.minimumLineSpacing = 5
+        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 0, right: 0)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: "EmojiCell")
@@ -80,7 +84,8 @@ final class HabitViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 5
-        layout.minimumLineSpacing = 0
+        layout.minimumLineSpacing = 5
+        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 0, right: 0)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(ColorCell.self, forCellWithReuseIdentifier: "ColorCell")
@@ -148,6 +153,12 @@ final class HabitViewController: UIViewController {
         setupUI()
         setupNavigationBar()
         setupGestureRecognizer()
+        updateCollectionViewHeights()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewHeights()
     }
     
     // MARK: - Gesture Recognizer
@@ -179,6 +190,9 @@ final class HabitViewController: UIViewController {
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(createButton)
         
+        emojiCollectionHeightConstraint = emojiCollectionView.heightAnchor.constraint(equalToConstant: 204)
+        colorCollectionHeightConstraint = colorCollectionView.heightAnchor.constraint(equalToConstant: 204)
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -201,30 +215,44 @@ final class HabitViewController: UIViewController {
             optionsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             optionsTableView.heightAnchor.constraint(equalToConstant: 150),
             
-            emojiLabel.topAnchor.constraint(equalTo: optionsTableView.bottomAnchor, constant: 32),
+            emojiLabel.topAnchor.constraint(equalTo: optionsTableView.bottomAnchor, constant: 24),
             emojiLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             emojiLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             emojiCollectionView.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 24),
             emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            emojiCollectionView.heightAnchor.constraint(equalToConstant: 204),
+            emojiCollectionHeightConstraint,
             
-            colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 40),
+            colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 16),
             colorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             colorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             colorCollectionView.topAnchor.constraint(equalTo: colorLabel.bottomAnchor, constant: 24),
             colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            colorCollectionView.heightAnchor.constraint(equalToConstant: 204),
+            colorCollectionHeightConstraint,
             
-            buttonsStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 40),
+            buttonsStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 0),
             buttonsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             buttonsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
             buttonsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
+    }
+    
+    // MARK: - Height Calculation
+    private func updateCollectionViewHeights() {
+        let emojiRows = ceil(CGFloat(emojis.count) / 6.0)
+        let emojiHeight = emojiRows * 52 + (emojiRows - 1) * 5 + 24
+        
+        let colorRows = ceil(CGFloat(colors.count) / 6.0)
+        let colorHeight = colorRows * 52 + (colorRows - 1) * 5 + 24
+        
+        emojiCollectionHeightConstraint.constant = emojiHeight
+        colorCollectionHeightConstraint.constant = colorHeight
+        
+        view.layoutIfNeeded()
     }
     
     private func setupNavigationBar() {
@@ -368,10 +396,18 @@ extension HabitViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        let totalWidth = collectionView.bounds.width - 32
+        let totalWidth = collectionView.bounds.width
         let itemsPerRow: CGFloat = 6
         let totalSpacing = totalWidth - (itemsPerRow * 52)
         return totalSpacing / (itemsPerRow - 1)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

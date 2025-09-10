@@ -1,6 +1,8 @@
 import UIKit
 
 final class EmojiCell: UICollectionViewCell {
+    static let identifier = "EmojiCell"
+    
     private let emojiLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 32)
@@ -18,6 +20,9 @@ final class EmojiCell: UICollectionViewCell {
     }
     
     private func setupUI() {
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+        
         contentView.addSubview(emojiLabel)
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -32,10 +37,14 @@ final class EmojiCell: UICollectionViewCell {
         
         if isSelected {
             contentView.backgroundColor = UIColor(resource: .ypLightGray)
-            contentView.layer.cornerRadius = 16
         } else {
             contentView.backgroundColor = .clear
-            contentView.layer.cornerRadius = 0
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        emojiLabel.text = nil
+        contentView.backgroundColor = .clear
     }
 }
