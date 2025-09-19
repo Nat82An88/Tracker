@@ -1,6 +1,5 @@
 import UIKit
 
-// MARK: - Onboarding View Controller
 final class OnboardingViewController: UIViewController {
     
     // MARK: - Properties
@@ -24,6 +23,17 @@ final class OnboardingViewController: UIViewController {
         label.textColor = UIColor(resource: .ypBlackDay)
         label.textAlignment = .center
         label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
+        paragraphStyle.alignment = .center
+        
+        label.attributedText = NSAttributedString(
+            string: titleText,
+            attributes: [.paragraphStyle: paragraphStyle]
+        )
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,6 +45,7 @@ final class OnboardingViewController: UIViewController {
         button.backgroundColor = .ypBlackDay
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
+        button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -71,9 +82,9 @@ final class OnboardingViewController: UIViewController {
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 432),
-            titleLabel.widthAnchor.constraint(equalToConstant: 343),
-            titleLabel.heightAnchor.constraint(equalToConstant: 76),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 432),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             actionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             actionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 668),

@@ -19,7 +19,6 @@ final class OnboardingPageViewController: UIPageViewController {
         dataSource = self
         delegate = self
         
-        // Create onboarding pages
         let firstPage = OnboardingViewController(
             backgroundImage: UIImage(resource: .backgroundFirst),
             title: "Отслеживайте только\nто, что хотите",
@@ -47,7 +46,7 @@ final class OnboardingPageViewController: UIPageViewController {
         view.addSubview(pageControl)
         
         NSLayoutConstraint.activate([
-            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -134),
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -168),
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
