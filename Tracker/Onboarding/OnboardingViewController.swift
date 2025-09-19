@@ -39,17 +39,17 @@ final class OnboardingViewController: UIViewController {
     }()
     
     private lazy var actionButton: UIButton = {
-           let button = UIButton(type: .system)
-           button.setTitle(buttonTitle, for: .normal)
-           button.setTitleColor(.white, for: .normal)
-           button.backgroundColor = .ypBlackDay
-           button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-           button.layer.cornerRadius = 16
-           button.layer.masksToBounds = true
-           button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-           button.translatesAutoresizingMaskIntoConstraints = false
-           return button
-       }()
+        let button = UIButton(type: .system)
+        button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .ypBlackDay
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.layer.cornerRadius = 16
+        button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     // MARK: - Initialization
     init(backgroundImage: UIImage?, title: String, buttonTitle: String) {

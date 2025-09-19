@@ -68,12 +68,24 @@ final class OnboardingPageViewController: UIPageViewController {
 extension OnboardingPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
-        return currentIndex > 0 ? pages[currentIndex - 1] : nil
+        
+        switch currentIndex {
+        case 0:
+            return pages.last
+        default:
+            return pages[currentIndex - 1]
+        }
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
-        return currentIndex < pages.count - 1 ? pages[currentIndex + 1] : nil
+        
+        switch currentIndex {
+        case pages.count - 1:
+            return pages.first
+        default:
+            return pages[currentIndex + 1]
+        }
     }
 }
 
