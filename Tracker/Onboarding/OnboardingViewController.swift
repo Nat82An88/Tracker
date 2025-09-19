@@ -26,7 +26,7 @@ final class OnboardingViewController: UIViewController {
         label.lineBreakMode = .byWordWrapping
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 6
+        paragraphStyle.lineSpacing = 0
         paragraphStyle.alignment = .center
         
         label.attributedText = NSAttributedString(
@@ -39,17 +39,17 @@ final class OnboardingViewController: UIViewController {
     }()
     
     private lazy var actionButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(buttonTitle, for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .ypBlackDay
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.layer.cornerRadius = 16
-        button.layer.masksToBounds = true
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+           let button = UIButton(type: .system)
+           button.setTitle(buttonTitle, for: .normal)
+           button.setTitleColor(.white, for: .normal)
+           button.backgroundColor = .ypBlackDay
+           button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+           button.layer.cornerRadius = 16
+           button.layer.masksToBounds = true
+           button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+           button.translatesAutoresizingMaskIntoConstraints = false
+           return button
+       }()
     
     // MARK: - Initialization
     init(backgroundImage: UIImage?, title: String, buttonTitle: String) {
@@ -82,13 +82,13 @@ final class OnboardingViewController: UIViewController {
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 432),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 456),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             actionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            actionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 668),
-            actionButton.widthAnchor.constraint(equalToConstant: 335),
+            actionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 700),
+            actionButton.widthAnchor.constraint(equalToConstant: 347),
             actionButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }

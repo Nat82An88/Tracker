@@ -4,8 +4,17 @@ final class OnboardingPageViewController: UIPageViewController {
     
     // MARK: - Properties
     private var pages: [UIViewController] = []
-    private let pageControl = UIPageControl()
     private let initialPage = 0
+    
+    lazy var pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.numberOfPages = pages.count
+        pageControl.currentPage = initialPage
+        pageControl.currentPageIndicatorTintColor = .ypBlackDay
+        pageControl.pageIndicatorTintColor = .ypGray
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        return pageControl
+    }()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -37,16 +46,10 @@ final class OnboardingPageViewController: UIPageViewController {
     }
     
     private func setupPageControl() {
-        pageControl.currentPage = initialPage
-        pageControl.numberOfPages = pages.count
-        pageControl.currentPageIndicatorTintColor = .ypBlackDay
-        pageControl.pageIndicatorTintColor = .ypGray
-        
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pageControl)
         
         NSLayoutConstraint.activate([
-            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -168),
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -132),
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
