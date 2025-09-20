@@ -75,21 +75,28 @@ final class OnboardingViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(actionButton)
         
+        // Констрейнты для backgroundImageView
         NSLayoutConstraint.activate([
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        // Констрейнты для titleLabel
+        NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 456),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
+            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: 24)
+        ])
+        
+        // Констрейнты для actionButton
+        NSLayoutConstraint.activate([
             actionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            actionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 700),
-            actionButton.widthAnchor.constraint(equalToConstant: 347),
-            actionButton.heightAnchor.constraint(equalToConstant: 60)
+            actionButton.heightAnchor.constraint(equalToConstant: 60),
+            actionButton.widthAnchor.constraint(equalToConstant: 335),
+            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
         ])
     }
     
