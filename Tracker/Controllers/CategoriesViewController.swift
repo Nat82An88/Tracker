@@ -146,8 +146,10 @@ final class CategoriesViewController: UIViewController {
         }
         
         viewModel.onCategorySelect = { [weak self] categoryTitle in
-            self?.onCategorySelect?(categoryTitle)
-            self?.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self?.onCategorySelect?(categoryTitle)
+                self?.navigationController?.popViewController(animated: true)
+            }
         }
         
         viewModel.onError = { [weak self] error in
@@ -305,7 +307,8 @@ extension CategoriesViewController: UITableViewDelegate {
             corners.update(with: .bottomRight)
         }
         
-        if !corners.isEmpty {
+        switch corners.isEmpty {
+        case false:
             let path = UIBezierPath(
                 roundedRect: cell.bounds,
                 byRoundingCorners: corners,
@@ -314,7 +317,8 @@ extension CategoriesViewController: UITableViewDelegate {
             let mask = CAShapeLayer()
             mask.path = path.cgPath
             cell.layer.mask = mask
-        } else {
+            
+        case true:
             cell.layer.mask = nil
         }
     }
