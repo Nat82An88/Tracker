@@ -15,6 +15,8 @@ final class CategoriesViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor(resource: .ypWhite)
+        tableView.layer.cornerRadius = 16
+        tableView.clipsToBounds = true
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -91,9 +93,9 @@ final class CategoriesViewController: UIViewController {
         placeholderStackView.addArrangedSubview(placeholderLabel)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: addCategoryButton.topAnchor, constant: -16),
             
             placeholderStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -128,8 +130,9 @@ final class CategoriesViewController: UIViewController {
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     }
-    
     private func setupBindings() {
         viewModel.onCategoriesUpdate = { [weak self] in
             self?.tableView.reloadData()
@@ -153,7 +156,6 @@ final class CategoriesViewController: UIViewController {
     private func setupInitialSelection() {
         guard let selectedCategoryTitle = selectedCategoryTitle else { return }
         
-        // Найти индекс выбранной категории и установить selection
         for i in 0..<viewModel.getCategoriesCount() {
             if viewModel.getCategoryTitle(at: i) == selectedCategoryTitle {
                 viewModel.selectCategory(at: i)
@@ -227,7 +229,6 @@ final class CategoriesViewController: UIViewController {
     private func deleteCategory(at indexPath: IndexPath) {
         do {
             try viewModel.deleteCategory(at: indexPath.row)
-            // Категория автоматически обновится через binding
         } catch {
             showErrorAlert(message: "Не удалось удалить категорию")
         }
