@@ -75,6 +75,7 @@ final class CategoriesViewController: UIViewController {
         setupUI()
         setupBindings()
         viewModel.loadCategories()
+        setupInitialSelection()
     }
     
     // MARK: - Setup
@@ -139,9 +140,25 @@ final class CategoriesViewController: UIViewController {
             self?.placeholderStackView.isHidden = !isEmpty
         }
         
-        viewModel.onCategorySelect = { [weak self] category in
-            self?.onCategorySelect?(category.title)
+        viewModel.onCategorySelect = { [weak self] categoryTitle in
+            self?.onCategorySelect?(categoryTitle)
             self?.navigationController?.popViewController(animated: true)
+        }
+        
+        viewModel.onError = { [weak self] error in
+            self?.showErrorAlert(message: "Произошла ошибка: \(error.localizedDescription)")
+        }
+    }
+    
+    private func setupInitialSelection() {
+        guard let selectedCategoryTitle = selectedCategoryTitle else { return }
+        
+        // Найти индекс выбранной категории и установить selection
+        for i in 0..<viewModel.getCategoriesCount() {
+            if viewModel.getCategoryTitle(at: i) == selectedCategoryTitle {
+                viewModel.selectCategory(at: i)
+                break
+            }
         }
     }
     
@@ -196,7 +213,7 @@ final class CategoriesViewController: UIViewController {
         )
         
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            self?.deleteCategory(category, at: indexPath)
+            self?.deleteCategory(at: indexPath)
         }
         
         let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
@@ -207,20 +224,19 @@ final class CategoriesViewController: UIViewController {
         present(alertController, animated: true)
     }
     
-    private func deleteCategory(_ category: TrackerCategory, at indexPath: IndexPath) {
+    private func deleteCategory(at indexPath: IndexPath) {
         do {
-            try viewModel.deleteCategory(category)
-            viewModel.loadCategories()
+            try viewModel.deleteCategory(at: indexPath.row)
+            // Категория автоматически обновится через binding
         } catch {
-            print("Error deleting category: \(error)")
-            showDeleteErrorAlert()
+            showErrorAlert(message: "Не удалось удалить категорию")
         }
     }
     
-    private func showDeleteErrorAlert() {
+    private func showErrorAlert(message: String) {
         let alert = UIAlertController(
             title: "Ошибка",
-            message: "Не удалось удалить категорию",
+            message: message,
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -268,14 +284,7 @@ extension CategoriesViewController: UITableViewDataSource {
 extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        viewModel.selectCategory(at: indexPath.row)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
-            if let selectedCategory = self?.viewModel.selectedCategory {
-                self?.onCategorySelect?(selectedCategory.title)
-            }
-            self?.navigationController?.popViewController(animated: true)
-        }
+        viewModel.handleCategorySelection(at: indexPath.row)
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

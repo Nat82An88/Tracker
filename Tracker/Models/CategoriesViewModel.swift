@@ -4,13 +4,14 @@ final class CategoriesViewModel {
     
     // MARK: - Properties
     private let trackerCategoryStore: TrackerCategoryStore
-    private(set) var categories: [TrackerCategory] = []
-    private(set) var selectedCategory: TrackerCategory?
+    private var categories: [TrackerCategory] = []
+    private var selectedCategoryIndex: Int?
     
     // MARK: - Bindings
     var onCategoriesUpdate: (() -> Void)?
-    var onCategorySelect: ((TrackerCategory) -> Void)?
+    var onCategorySelect: ((String) -> Void)?
     var onEmptyStateChange: ((Bool) -> Void)?
+    var onError: ((Error) -> Void)?
     
     // MARK: - Initialization
     init(trackerCategoryStore: TrackerCategoryStore) {
@@ -35,14 +36,21 @@ final class CategoriesViewModel {
             onCategoriesUpdate?()
             onEmptyStateChange?(categories.isEmpty)
         } catch {
-            print("Error loading categories: \(error)")
+            onError?(error)
         }
     }
     
     func selectCategory(at index: Int) {
-        guard index >= 0 && index < categories.count else { return }
-        selectedCategory = categories[index]
+        selectedCategoryIndex = index
+    }
+    
+    func handleCategorySelection(at index: Int) {
+        selectCategory(at: index)
         onCategoriesUpdate?()
+        
+        if let categoryTitle = getCategoryTitle(at: index) {
+            onCategorySelect?(categoryTitle)
+        }
     }
     
     func getCategory(at index: Int) -> TrackerCategory {
@@ -62,8 +70,7 @@ final class CategoriesViewModel {
     }
     
     func isCategorySelected(at index: Int) -> Bool {
-        guard index >= 0 && index < categories.count else { return false }
-        return categories[index].title == selectedCategory?.title
+        return index == selectedCategoryIndex
     }
     
     func addNewCategory(title: String) {
@@ -71,11 +78,22 @@ final class CategoriesViewModel {
         do {
             try trackerCategoryStore.addCategory(newCategory)
         } catch {
-            print("Error adding category: \(error)")
+            onError?(error)
         }
     }
     
-    func deleteCategory(_ category: TrackerCategory) throws {
-        try trackerCategoryStore.deleteCategory(category)
+    func deleteCategory(at index: Int) throws {
+        let category = getCategory(at: index)
+        do {
+            try trackerCategoryStore.deleteCategory(category)
+        } catch {
+            onError?(error)
+            throw error
+        }
+    }
+    
+    func getSelectedCategoryTitle() -> String? {
+        guard let index = selectedCategoryIndex else { return nil }
+        return getCategoryTitle(at: index)
     }
 }

@@ -7,6 +7,21 @@ final class OnboardingViewController: UIViewController {
     private let titleText: String
     private let buttonTitle: String
     
+    // MARK: - Constants
+    private enum Constants {
+        static let titleFontSize: CGFloat = 32
+        static let buttonFontSize: CGFloat = 16
+        static let buttonCornerRadius: CGFloat = 16
+        static let buttonHeight: CGFloat = 60
+        static let buttonHorizontalMargin: CGFloat = 20
+        static let buttonWidth: CGFloat = 335
+        static let horizontalPadding: CGFloat = 16
+        static let titleTopOffset: CGFloat = 24
+        static let buttonBottomOffset: CGFloat = -50
+        
+        static let buttonContentInsets = UIEdgeInsets(top: 19, left: 32, bottom: 19, right: 32)
+    }
+    
     // MARK: - UI Elements
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -19,20 +34,22 @@ final class OnboardingViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = titleText
-        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: Constants.titleFontSize, weight: .bold)
         label.textColor = UIColor(resource: .ypBlackDay)
         label.textAlignment = .center
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
         
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 0
-        paragraphStyle.alignment = .center
-        
-        label.attributedText = NSAttributedString(
-            string: titleText,
-            attributes: [.paragraphStyle: paragraphStyle]
-        )
+        if let paragraphStyle = NSParagraphStyle.default.mutableCopy() as? NSMutableParagraphStyle {
+            paragraphStyle.lineSpacing = 0
+            paragraphStyle.alignment = .center
+            label.attributedText = NSAttributedString(
+                string: titleText,
+                attributes: [.paragraphStyle: paragraphStyle]
+            )
+        } else {
+            label.text = titleText
+        }
         
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -43,10 +60,14 @@ final class OnboardingViewController: UIViewController {
         button.setTitle(buttonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .ypBlackDay
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.layer.cornerRadius = 16
+        button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.buttonFontSize, weight: .medium)
+        button.layer.cornerRadius = Constants.buttonCornerRadius
         button.layer.masksToBounds = true
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        
+        button.addAction(UIAction { [weak self] _ in
+            self?.buttonTapped()
+        }, for: .touchUpInside)
+        
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -59,6 +80,7 @@ final class OnboardingViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -75,35 +97,42 @@ final class OnboardingViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(actionButton)
         
-        // Констрейнты для backgroundImageView
         NSLayoutConstraint.activate([
+            // Background image constraints
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-        
-        // Констрейнты для titleLabel
-        NSLayoutConstraint.activate([
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            // Title label constraints
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            titleLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: 24)
-        ])
-        
-        // Констрейнты для actionButton
-        NSLayoutConstraint.activate([
-            actionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            actionButton.heightAnchor.constraint(equalToConstant: 60),
-            actionButton.widthAnchor.constraint(equalToConstant: 335),
-            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
+            titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.horizontalPadding),
+            titleLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: Constants.titleTopOffset),
+            
+            // Action button constraints
+            actionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.buttonHorizontalMargin),
+            actionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.buttonHorizontalMargin),
+            actionButton.heightAnchor.constraint(equalToConstant: Constants.buttonHeight),
+            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.buttonBottomOffset)
         ])
     }
     
     // MARK: - Actions
-    @objc private func buttonTapped() {
-        if let pageViewController = parent as? OnboardingPageViewController {
-            pageViewController.buttonTapped()
+    private func buttonTapped() {
+        if let pageViewController = findParentOnboardingPageViewController() {
+            pageViewController.completeOnboarding()
         }
+    }
+    
+    private func findParentOnboardingPageViewController() -> OnboardingPageViewController? {
+        var parentController = self.parent
+        while let current = parentController {
+            if let onboardingController = current as? OnboardingPageViewController {
+                return onboardingController
+            }
+            parentController = current.parent
+        }
+        return nil
     }
 }

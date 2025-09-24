@@ -58,7 +58,7 @@ final class TrackerCategoryStore: NSObject {
         
         let categories = try context.fetch(request)
         guard let categoryToUpdate = categories.first else {
-            throw NSError(domain: "CategoryNotFound", code: 404, userInfo: nil)
+            throw CategoryError.categoryNotFound
         }
         
         categoryToUpdate.title = newTitle
@@ -71,7 +71,7 @@ final class TrackerCategoryStore: NSObject {
         
         let categories = try context.fetch(request)
         guard let categoryToDelete = categories.first else {
-            throw NSError(domain: "CategoryNotFound", code: 404, userInfo: nil)
+            throw CategoryError.categoryNotFound
         }
         
         context.delete(categoryToDelete)
@@ -166,5 +166,14 @@ final class TrackerCategoryStore: NSObject {
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         notifyCategoriesChanged()
+    }
+}
+
+// MARK: - Error Handling
+extension TrackerCategoryStore {
+    enum CategoryError: Error {
+        case categoryNotFound
+        case invalidData
+        case saveFailed
     }
 }

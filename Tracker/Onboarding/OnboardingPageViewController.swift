@@ -6,7 +6,13 @@ final class OnboardingPageViewController: UIPageViewController {
     private var pages: [UIViewController] = []
     private let initialPage = 0
     
-    lazy var pageControl: UIPageControl = {
+    // MARK: - Constants
+    private enum Constants {
+        static let pageControlBottomOffset: CGFloat = -134
+    }
+    
+    // MARK: - UI Elements
+    private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = initialPage
@@ -15,6 +21,16 @@ final class OnboardingPageViewController: UIPageViewController {
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         return pageControl
     }()
+    
+    // MARK: - Initialization
+    override init(transitionStyle style: UIPageViewController.TransitionStyle, navigationOrientation: UIPageViewController.NavigationOrientation, options: [UIPageViewController.OptionsKey : Any]? = nil) {
+        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: options)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -42,20 +58,20 @@ final class OnboardingPageViewController: UIPageViewController {
         
         pages = [firstPage, secondPage]
         
-        setViewControllers([pages[initialPage]], direction: .forward, animated: true, completion: nil)
+        setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
     
     private func setupPageControl() {
         view.addSubview(pageControl)
         
         NSLayoutConstraint.activate([
-            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -134),
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.pageControlBottomOffset),
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
-    // MARK: - Button Action
-    @objc func buttonTapped() {
+    // MARK: - Actions
+    func completeOnboarding() {
         UserDefaults.standard.set(true, forKey: "onboardingShown")
         
         let tabBarController = TabBarController()
@@ -69,31 +85,21 @@ extension OnboardingPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         
-        switch currentIndex {
-        case 0:
-            return pages.last
-        default:
-            return pages[currentIndex - 1]
-        }
+        return currentIndex == 0 ? pages.last : pages[currentIndex - 1]
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         
-        switch currentIndex {
-        case pages.count - 1:
-            return pages.first
-        default:
-            return pages[currentIndex + 1]
-        }
+        return currentIndex == pages.count - 1 ? pages.first : pages[currentIndex + 1]
     }
 }
 
 // MARK: - UIPageViewControllerDelegate
 extension OnboardingPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard let viewControllers = pageViewController.viewControllers,
-              let currentIndex = pages.firstIndex(of: viewControllers[0]) else { return }
+        guard let currentViewController = pageViewController.viewControllers?.first,
+              let currentIndex = pages.firstIndex(of: currentViewController) else { return }
         pageControl.currentPage = currentIndex
     }
 }
