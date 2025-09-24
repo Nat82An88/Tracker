@@ -145,6 +145,27 @@ final class CategoriesViewController: UIViewController {
         }
     }
     
+    // MARK: - Context Menu Configuration
+    private func makeContextMenu(for category: TrackerCategory, at indexPath: IndexPath) -> UIMenu {
+        let editAction = UIAction(
+            title: "Редактировать",
+            image: nil,
+            attributes: []
+        ) { [weak self] _ in
+            self?.editCategory(category)
+        }
+        
+        let deleteAction = UIAction(
+            title: "Удалить",
+            image: nil,
+            attributes: .destructive
+        ) { [weak self] _ in
+            self?.showDeleteConfirmation(for: category, at: indexPath)
+        }
+        
+        return UIMenu(title: "", children: [editAction, deleteAction])
+    }
+    
     // MARK: - Actions
     @objc private func addCategoryButtonTapped() {
         let newCategoryVC = NewCategoryViewController(trackerCategoryStore: trackerCategoryStore)
@@ -153,6 +174,57 @@ final class CategoriesViewController: UIViewController {
         }
         let navController = UINavigationController(rootViewController: newCategoryVC)
         present(navController, animated: true)
+    }
+    
+    private func editCategory(_ category: TrackerCategory) {
+        let editCategoryVC = EditCategoryViewController(
+            trackerCategoryStore: trackerCategoryStore,
+            category: category
+        )
+        editCategoryVC.onCategoryUpdated = { [weak self] in
+            self?.viewModel.loadCategories()
+        }
+        let navController = UINavigationController(rootViewController: editCategoryVC)
+        present(navController, animated: true)
+    }
+    
+    private func showDeleteConfirmation(for category: TrackerCategory, at indexPath: IndexPath) {
+        let alertController = UIAlertController(
+            title: "Эта категория точно не нужна?",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.deleteCategory(category, at: indexPath)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true)
+    }
+    
+    private func deleteCategory(_ category: TrackerCategory, at indexPath: IndexPath) {
+        do {
+            try viewModel.deleteCategory(category)
+            viewModel.loadCategories()
+        } catch {
+            print("Error deleting category: \(error)")
+            showDeleteErrorAlert()
+        }
+    }
+    
+    private func showDeleteErrorAlert() {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Не удалось удалить категорию",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     // MARK: - Helper Methods
@@ -178,11 +250,11 @@ extension CategoriesViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let title = viewModel.getCategoryTitle(at: indexPath.row) ?? ""
+        let category = viewModel.getCategory(at: indexPath.row)
         let isSelected = viewModel.isCategorySelected(at: indexPath.row)
         let isLastCell = indexPath.row == viewModel.getCategoriesCount() - 1
         
-        cell.configure(with: title, isSelected: isSelected, isLastCell: isLastCell)
+        cell.configure(with: category.title, isSelected: isSelected, isLastCell: isLastCell)
         
         return cell
     }
@@ -203,6 +275,17 @@ extension CategoriesViewController: UITableViewDelegate {
                 self?.onCategorySelect?(selectedCategory.title)
             }
             self?.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let category = viewModel.getCategory(at: indexPath.row)
+        
+        return UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil
+        ) { [weak self] _ in
+            return self?.makeContextMenu(for: category, at: indexPath)
         }
     }
 }

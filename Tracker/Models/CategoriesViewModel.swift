@@ -45,6 +45,13 @@ final class CategoriesViewModel {
         onCategoriesUpdate?()
     }
     
+    func getCategory(at index: Int) -> TrackerCategory {
+        guard index >= 0 && index < categories.count else {
+            fatalError("Index out of range")
+        }
+        return categories[index]
+    }
+    
     func getCategoryTitle(at index: Int) -> String? {
         guard index >= 0 && index < categories.count else { return nil }
         return categories[index].title
@@ -66,5 +73,9 @@ final class CategoriesViewModel {
         } catch {
             print("Error adding category: \(error)")
         }
+    }
+    
+    func deleteCategory(_ category: TrackerCategory) throws {
+        try trackerCategoryStore.deleteCategory(category)
     }
 }
