@@ -114,6 +114,7 @@ final class CategoriesViewController: UIViewController {
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.setHidesBackButton(true, animated: false)
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

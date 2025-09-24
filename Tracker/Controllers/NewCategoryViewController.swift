@@ -74,7 +74,7 @@ final class NewCategoryViewController: UIViewController {
     
     private func setupNavigationBar() {
         title = "Новая категория"
-        
+            
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(resource: .ypWhite)
