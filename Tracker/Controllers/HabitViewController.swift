@@ -151,13 +151,13 @@ final class HabitViewController: UIViewController {
     
     // MARK: - Lifecycle
     init(trackerCategoryStore: TrackerCategoryStore) {
-           self.trackerCategoryStore = trackerCategoryStore
-           super.init(nibName: nil, bundle: nil)
-       }
-       
-       required init?(coder: NSCoder) {
-           fatalError("init(coder:) has not been implemented")
-       }
+        self.trackerCategoryStore = trackerCategoryStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -340,15 +340,22 @@ extension HabitViewController: UITableViewDataSource {
         case 0:
             cell.configure(title: "Категория", subtitle: selectedCategoryTitle)
         case 1:
-            let daysText = selectedDays.isEmpty ? nil : selectedDays.map { $0.shortName }.joined(separator: ", ")
+            let daysText: String?
+            if selectedDays.isEmpty {
+                daysText = nil
+            } else if selectedDays.count == 7 {
+                daysText = "Каждый день"
+            } else {
+                daysText = selectedDays.map { $0.shortName }.joined(separator: ", ")
+            }
             cell.configure(title: "Расписание", subtitle: daysText)
         default:
             break
         }
         
         return cell
-    }}
-
+    }
+}
 // MARK: - UITableViewDelegate
 extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
