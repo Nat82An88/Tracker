@@ -20,7 +20,7 @@ final class HabitViewController: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
-        textField.backgroundColor = UIColor(named: "ypBackgroundDay")
+        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -51,7 +51,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = "Emoji"
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(named: "ypBlackDay")
+        label.textColor = UIColor(resource: .ypBlackDay)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -77,7 +77,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = "Цвет"
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(named: "ypBlackDay")
+        label.textColor = UIColor(resource: .ypBlackDay)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -109,13 +109,13 @@ final class HabitViewController: UIViewController {
     }()
     
     private lazy var cancelButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setTitle("Отменить", for: .normal)
-        button.setTitleColor(UIColor(named: "ypRed"), for: .normal)
+        button.setTitleColor(UIColor(resource: .ypRed), for: .normal)
         button.backgroundColor = .systemBackground
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(named: "ypRed")?.cgColor
+        button.layer.borderColor = UIColor(resource: .ypRed).cgColor
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.titleLabel?.textAlignment = .center
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -124,10 +124,10 @@ final class HabitViewController: UIViewController {
     }()
     
     private lazy var createButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(named: "ypGray")
+        button.backgroundColor = UIColor(resource: .ypGray)
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -297,7 +297,7 @@ final class HabitViewController: UIViewController {
         let isCategorySelected = selectedCategoryTitle != nil
         
         createButton.isEnabled = isTitleValid && isScheduleSelected && isEmojiSelected && isColorSelected && isCategorySelected
-        createButton.backgroundColor = createButton.isEnabled ? UIColor(named: "ypBlackDay") : UIColor(named: "ypGray")
+        createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions
