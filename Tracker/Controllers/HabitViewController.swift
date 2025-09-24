@@ -20,7 +20,7 @@ final class HabitViewController: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
-        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        textField.backgroundColor = UIColor(named: "ypBackgroundDay")
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -51,7 +51,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = "Emoji"
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(named: "ypBlackDay")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -77,7 +77,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = "Цвет"
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(named: "ypBlackDay")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -111,11 +111,11 @@ final class HabitViewController: UIViewController {
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
-        button.setTitleColor(UIColor(resource: .ypRed), for: .normal)
+        button.setTitleColor(UIColor(named: "ypRed"), for: .normal)
         button.backgroundColor = .systemBackground
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(resource: .ypRed).cgColor
+        button.layer.borderColor = UIColor(named: "ypRed")?.cgColor
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.titleLabel?.textAlignment = .center
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -127,7 +127,7 @@ final class HabitViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(resource: .ypGray)
+        button.backgroundColor = UIColor(named: "ypGray")
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -164,12 +164,11 @@ final class HabitViewController: UIViewController {
         setupUI()
         setupNavigationBar()
         setupGestureRecognizer()
-        updateCollectionViewHeights()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateCollectionViewHeights()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateCollectionViewHeightsSafe()
     }
     
     // MARK: - Gesture Recognizer
@@ -253,7 +252,14 @@ final class HabitViewController: UIViewController {
     }
     
     // MARK: - Height Calculation
-    private func updateCollectionViewHeights() {
+    private func updateCollectionViewHeightsSafe() {
+        guard view.window != nil else {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateCollectionViewHeightsSafe()
+            }
+            return
+        }
+        
         let emojiRows = ceil(CGFloat(emojis.count) / 6.0)
         let emojiHeight = emojiRows * 52 + (emojiRows - 1) * 5 + 24
         
@@ -263,7 +269,9 @@ final class HabitViewController: UIViewController {
         emojiCollectionHeightConstraint.constant = emojiHeight
         colorCollectionHeightConstraint.constant = colorHeight
         
-        view.layoutIfNeeded()
+        UIView.animate(withDuration: 0) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     private func setupNavigationBar() {
@@ -289,7 +297,7 @@ final class HabitViewController: UIViewController {
         let isCategorySelected = selectedCategoryTitle != nil
         
         createButton.isEnabled = isTitleValid && isScheduleSelected && isEmojiSelected && isColorSelected && isCategorySelected
-        createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
+        createButton.backgroundColor = createButton.isEnabled ? UIColor(named: "ypBlackDay") : UIColor(named: "ypGray")
     }
     
     // MARK: - Actions
@@ -356,6 +364,7 @@ extension HabitViewController: UITableViewDataSource {
         return cell
     }
 }
+
 // MARK: - UITableViewDelegate
 extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -381,7 +390,10 @@ extension HabitViewController: UITableViewDelegate {
                 selectedCategoryTitle: selectedCategoryTitle,
                 onCategorySelect: { [weak self] categoryTitle in
                     self?.selectedCategoryTitle = categoryTitle
-                    tableView.reloadData()
+                    DispatchQueue.main.async {
+                        self?.optionsTableView.reloadData()
+                        self?.updateCreateButtonState()
+                    }
                 }
             )
             navigationController?.pushViewController(categoriesVC, animated: true)
@@ -391,8 +403,11 @@ extension HabitViewController: UITableViewDelegate {
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDaysSelected = { [weak self] days in
                 self?.selectedDays = days
-                tableView.reloadData()
-                self?.updateCreateButtonState()
+                // Отложенное обновление таблицы
+                DispatchQueue.main.async {
+                    self?.optionsTableView.reloadData()
+                    self?.updateCreateButtonState()
+                }
             }
             navigationController?.pushViewController(scheduleVC, animated: true)
             

@@ -16,6 +16,7 @@ final class CategoriesViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor(resource: .ypWhite)
         tableView.layer.cornerRadius = 16
+        tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         tableView.clipsToBounds = true
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -133,6 +134,7 @@ final class CategoriesViewController: UIViewController {
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     }
+    
     private func setupBindings() {
         viewModel.onCategoriesUpdate = { [weak self] in
             self?.tableView.reloadData()
@@ -273,6 +275,8 @@ extension CategoriesViewController: UITableViewDataSource {
         
         cell.configure(with: category.title, isSelected: isSelected, isLastCell: isLastCell)
         
+        cell.selectionStyle = .none
+        
         return cell
     }
     
@@ -284,8 +288,35 @@ extension CategoriesViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
         viewModel.handleCategorySelection(at: indexPath.row)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cornerRadius: CGFloat = 16
+        var corners: UIRectCorner = []
+        
+        if indexPath.row == 0 {
+            corners.update(with: .topLeft)
+            corners.update(with: .topRight)
+        }
+        
+        if indexPath.row == viewModel.getCategoriesCount() - 1 {
+            corners.update(with: .bottomLeft)
+            corners.update(with: .bottomRight)
+        }
+        
+        if !corners.isEmpty {
+            let path = UIBezierPath(
+                roundedRect: cell.bounds,
+                byRoundingCorners: corners,
+                cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
+            )
+            let mask = CAShapeLayer()
+            mask.path = path.cgPath
+            cell.layer.mask = mask
+        } else {
+            cell.layer.mask = nil
+        }
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
