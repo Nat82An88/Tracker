@@ -42,9 +42,7 @@ final class CategoriesViewModel {
     func selectCategory(at index: Int) {
         guard index >= 0 && index < categories.count else { return }
         selectedCategory = categories[index]
-        if let selectedCategory = selectedCategory {
-            onCategorySelect?(selectedCategory)
-        }
+        onCategoriesUpdate?()
     }
     
     func getCategoryTitle(at index: Int) -> String? {

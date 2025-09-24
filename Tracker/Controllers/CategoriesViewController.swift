@@ -197,5 +197,12 @@ extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         viewModel.selectCategory(at: indexPath.row)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            if let selectedCategory = self?.viewModel.selectedCategory {
+                self?.onCategorySelect?(selectedCategory.title)
+            }
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
 }
