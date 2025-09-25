@@ -3,7 +3,7 @@ import UIKit
 final class OnboardingPageViewController: UIPageViewController {
     
     // MARK: - Properties
-    private var pages: [UIViewController] = []
+    private var pages: [OnboardingViewController] = []
     private let initialPage = 0
     
     // MARK: - Constants
@@ -58,6 +58,12 @@ final class OnboardingPageViewController: UIPageViewController {
         
         pages = [firstPage, secondPage]
         
+        pages.forEach { page in
+            page.onButtonTap = { [weak self] in
+                self?.completeOnboarding()
+            }
+        }
+        
         setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
     
@@ -80,25 +86,20 @@ final class OnboardingPageViewController: UIPageViewController {
     }
 }
 
-// MARK: - UIPageViewControllerDataSource
-extension OnboardingPageViewController: UIPageViewControllerDataSource {
+// MARK: - UIPageViewControllerDataSource & Delegate
+extension OnboardingPageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
-        
+        guard let currentIndex = pages.firstIndex(of: viewController as! OnboardingViewController) else { return nil }
         return currentIndex == 0 ? pages.last : pages[currentIndex - 1]
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
-        
+        guard let currentIndex = pages.firstIndex(of: viewController as! OnboardingViewController) else { return nil }
         return currentIndex == pages.count - 1 ? pages.first : pages[currentIndex + 1]
     }
-}
-
-// MARK: - UIPageViewControllerDelegate
-extension OnboardingPageViewController: UIPageViewControllerDelegate {
+    
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard let currentViewController = pageViewController.viewControllers?.first,
+        guard let currentViewController = pageViewController.viewControllers?.first as? OnboardingViewController,
               let currentIndex = pages.firstIndex(of: currentViewController) else { return }
         pageControl.currentPage = currentIndex
     }

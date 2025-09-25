@@ -6,6 +6,7 @@ final class OnboardingViewController: UIViewController {
     private let backgroundImage: UIImage?
     private let titleText: String
     private let buttonTitle: String
+    var onButtonTap: (() -> Void)?
     
     // MARK: - Constants
     private enum Constants {
@@ -120,19 +121,6 @@ final class OnboardingViewController: UIViewController {
     
     // MARK: - Actions
     private func buttonTapped() {
-        if let pageViewController = findParentOnboardingPageViewController() {
-            pageViewController.completeOnboarding()
-        }
-    }
-    
-    private func findParentOnboardingPageViewController() -> OnboardingPageViewController? {
-        var parentController = self.parent
-        while let current = parentController {
-            if let onboardingController = current as? OnboardingPageViewController {
-                return onboardingController
-            }
-            parentController = current.parent
-        }
-        return nil
+        onButtonTap?()
     }
 }
