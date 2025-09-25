@@ -73,7 +73,9 @@ final class TrackerCell: UICollectionViewCell {
         cardView.backgroundColor = UIColor(named: tracker.color)
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title
-        countLabel.text = "\(completionCount) \(daysText(for: completionCount))"
+        
+        let daysText = localizedDaysText(for: completionCount)
+        countLabel.text = "\(completionCount) \(daysText)"
         
         updateButtonAppearance()
     }
@@ -137,21 +139,14 @@ final class TrackerCell: UICollectionViewCell {
             completeButton.backgroundColor = cardView.backgroundColor?.withAlphaComponent(0.3)
         } else {
             completeButton.setImage(UIImage(systemName: "plus"), for: .normal)
-            completeButton.tintColor = UIColor(resource: .ypWhite); completeButton.backgroundColor = cardView.backgroundColor
+            completeButton.tintColor = UIColor(resource: .ypWhite)
+            completeButton.backgroundColor = cardView.backgroundColor
         }
     }
     
-    private func daysText(for count: Int) -> String {
-        guard count >= 0 else { return "дней" }
-        
-        switch count % 10 {
-        case 1 where count % 100 != 11:
-            return "день"
-        case 2...4 where count % 100 < 10 || count % 100 >= 20:
-            return "дня"
-        default:
-            return "дней"
-        }
+    private func localizedDaysText(for count: Int) -> String {
+        let format = NSLocalizedString("number_of_days", comment: "Days count format")
+        return String.localizedStringWithFormat(format, count)
     }
     
     @objc private func completeButtonTapped() {
