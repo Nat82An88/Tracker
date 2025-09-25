@@ -7,6 +7,8 @@ final class HabitViewController: UIViewController {
     private var selectedDays: [Weekday] = []
     private var selectedEmoji: String?
     private var selectedColor: String?
+    private var selectedCategoryTitle: String?
+    private let trackerCategoryStore: TrackerCategoryStore
     
     private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     private let colors = (1...18).map { "selection_\($0)" }
@@ -107,7 +109,7 @@ final class HabitViewController: UIViewController {
     }()
     
     private lazy var cancelButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setTitle("Отменить", for: .normal)
         button.setTitleColor(UIColor(resource: .ypRed), for: .normal)
         button.backgroundColor = .systemBackground
@@ -122,7 +124,7 @@ final class HabitViewController: UIViewController {
     }()
     
     private lazy var createButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = UIColor(resource: .ypGray)
@@ -148,17 +150,25 @@ final class HabitViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle
+    init(trackerCategoryStore: TrackerCategoryStore) {
+        self.trackerCategoryStore = trackerCategoryStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
         setupGestureRecognizer()
-        updateCollectionViewHeights()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateCollectionViewHeights()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateCollectionViewHeightsSafe()
     }
     
     // MARK: - Gesture Recognizer
@@ -242,7 +252,14 @@ final class HabitViewController: UIViewController {
     }
     
     // MARK: - Height Calculation
-    private func updateCollectionViewHeights() {
+    private func updateCollectionViewHeightsSafe() {
+        guard view.window != nil else {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateCollectionViewHeightsSafe()
+            }
+            return
+        }
+        
         let emojiRows = ceil(CGFloat(emojis.count) / 6.0)
         let emojiHeight = emojiRows * 52 + (emojiRows - 1) * 5 + 24
         
@@ -252,7 +269,9 @@ final class HabitViewController: UIViewController {
         emojiCollectionHeightConstraint.constant = emojiHeight
         colorCollectionHeightConstraint.constant = colorHeight
         
-        view.layoutIfNeeded()
+        UIView.animate(withDuration: 0) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     private func setupNavigationBar() {
@@ -275,8 +294,9 @@ final class HabitViewController: UIViewController {
         let isScheduleSelected = !selectedDays.isEmpty
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
+        let isCategorySelected = selectedCategoryTitle != nil
         
-        createButton.isEnabled = isTitleValid && isScheduleSelected && isEmojiSelected && isColorSelected
+        createButton.isEnabled = isTitleValid && isScheduleSelected && isEmojiSelected && isColorSelected && isCategorySelected
         createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
     }
     
@@ -288,7 +308,8 @@ final class HabitViewController: UIViewController {
     @objc private func createButtonTapped() {
         guard let title = titleTextField.text, !title.isEmpty,
               let emoji = selectedEmoji,
-              let color = selectedColor else { return }
+              let color = selectedColor,
+              let categoryTitle = selectedCategoryTitle else { return }
         
         let newTracker = Tracker(
             title: title,
@@ -300,7 +321,7 @@ final class HabitViewController: UIViewController {
         
         print("Creating tracker: '\(title)' with schedule: \(selectedDays.map { $0.rawValue })")
         
-        onSave?(newTracker, "Пример категории")
+        onSave?(newTracker, categoryTitle)
         dismiss(animated: true)
     }
     
@@ -325,9 +346,16 @@ extension HabitViewController: UITableViewDataSource {
         
         switch indexPath.row {
         case 0:
-            cell.configure(title: "Категория", subtitle: nil)
+            cell.configure(title: "Категория", subtitle: selectedCategoryTitle)
         case 1:
-            let daysText = selectedDays.isEmpty ? nil : selectedDays.map { $0.shortName }.joined(separator: ", ")
+            let daysText: String?
+            if selectedDays.isEmpty {
+                daysText = nil
+            } else if selectedDays.count == 7 {
+                daysText = "Каждый день"
+            } else {
+                daysText = selectedDays.map { $0.shortName }.joined(separator: ", ")
+            }
             cell.configure(title: "Расписание", subtitle: daysText)
         default:
             break
@@ -356,15 +384,33 @@ extension HabitViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch indexPath.row {
+        case 0:
+            let categoriesVC = CategoriesViewController(
+                trackerCategoryStore: trackerCategoryStore,
+                selectedCategoryTitle: selectedCategoryTitle,
+                onCategorySelect: { [weak self] categoryTitle in
+                    self?.selectedCategoryTitle = categoryTitle
+                    DispatchQueue.main.async {
+                        self?.optionsTableView.reloadData()
+                        self?.updateCreateButtonState()
+                    }
+                }
+            )
+            navigationController?.pushViewController(categoriesVC, animated: true)
+            
         case 1:
             let scheduleVC = ScheduleViewController()
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDaysSelected = { [weak self] days in
                 self?.selectedDays = days
-                tableView.reloadData()
-                self?.updateCreateButtonState()
+                // Отложенное обновление таблицы
+                DispatchQueue.main.async {
+                    self?.optionsTableView.reloadData()
+                    self?.updateCreateButtonState()
+                }
             }
             navigationController?.pushViewController(scheduleVC, animated: true)
+            
         default:
             break
         }

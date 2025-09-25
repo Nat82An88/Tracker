@@ -328,7 +328,7 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func addButtonTapped() {
-        let habitVC = HabitViewController()
+        let habitVC = HabitViewController(trackerCategoryStore: trackerCategoryStore)
         habitVC.onSave = { [weak self] tracker, categoryTitle in
             self?.addTracker(tracker, toCategory: categoryTitle)
         }

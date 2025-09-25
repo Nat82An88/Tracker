@@ -10,16 +10,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
-        showMainApp()
-            window?.makeKeyAndVisible()
+        let onboardingShown = UserDefaults.standard.bool(forKey: "onboardingShown")
+        
+        if onboardingShown {
+            showMainApp()
+        } else {
+            showOnboarding()
+        }
+        
+        window?.makeKeyAndVisible()
     }
     
-    private func showLaunchScreenImmediately() {
-        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-        let launchScreenVC = storyboard.instantiateInitialViewController()
-        
-        window?.rootViewController = launchScreenVC
-        window?.makeKeyAndVisible()
+    private func showOnboarding() {
+        let onboardingVC = OnboardingPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal
+        )
+        window?.rootViewController = onboardingVC
     }
     
     private func showMainApp() {
@@ -31,6 +38,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                           animations: {
             self.window?.rootViewController = tabBarController
         }, completion: nil)
+    }
+    
+    private func showLaunchScreenImmediately() {
+        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let launchScreenVC = storyboard.instantiateInitialViewController()
+        
+        window?.rootViewController = launchScreenVC
+        window?.makeKeyAndVisible()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {}

@@ -52,6 +52,32 @@ final class TrackerCategoryStore: NSObject {
         try context.save()
     }
     
+    func updateCategory(_ category: TrackerCategory, with newTitle: String) throws {
+        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+        request.predicate = NSPredicate(format: "title == %@", category.title)
+        
+        let categories = try context.fetch(request)
+        guard let categoryToUpdate = categories.first else {
+            throw CategoryError.categoryNotFound
+        }
+        
+        categoryToUpdate.title = newTitle
+        try context.save()
+    }
+    
+    func deleteCategory(_ category: TrackerCategory) throws {
+        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+        request.predicate = NSPredicate(format: "title == %@", category.title)
+        
+        let categories = try context.fetch(request)
+        guard let categoryToDelete = categories.first else {
+            throw CategoryError.categoryNotFound
+        }
+        
+        context.delete(categoryToDelete)
+        try context.save()
+    }
+    
     func fetchCategory(with title: String) throws -> TrackerCategory? {
         let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
         request.predicate = NSPredicate(format: "title == %@", title)
@@ -140,5 +166,14 @@ final class TrackerCategoryStore: NSObject {
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         notifyCategoriesChanged()
+    }
+}
+
+// MARK: - Error Handling
+extension TrackerCategoryStore {
+    enum CategoryError: Error {
+        case categoryNotFound
+        case invalidData
+        case saveFailed
     }
 }
