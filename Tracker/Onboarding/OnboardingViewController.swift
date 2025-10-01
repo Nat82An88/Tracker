@@ -8,6 +8,14 @@ final class OnboardingViewController: UIViewController {
     private let buttonTitle: String
     var onButtonTap: (() -> Void)?
     
+    // MARK: - Initialization
+    init(backgroundImage: UIImage?, titleKey: String, buttonTitleKey: String) {
+        self.backgroundImage = backgroundImage
+        self.titleText = NSLocalizedString(titleKey, comment: "")
+        self.buttonTitle = NSLocalizedString(buttonTitleKey, comment: "")
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     // MARK: - Constants
     private enum Constants {
         static let titleFontSize: CGFloat = 32

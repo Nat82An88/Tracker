@@ -45,19 +45,24 @@ final class TrackersViewController: UIViewController {
     }()
     
     private lazy var placeholderLabel: UILabel = {
-            let label = UILabel()
-            label.text = Localizable.noTrackersPlaceholder
-            label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-            label.textColor = UIColor(resource: .ypBlackDay)
-            label.textAlignment = .center
-            return label
-        }()
+        let label = UILabel()
+        label.text = Localizable.noTrackersPlaceholder
+        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textAlignment = .center
+        return label
+    }()
     
     private lazy var datePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.preferredDatePickerStyle = .compact
         picker.datePickerMode = .date
-        picker.locale = Locale(identifier: "ru_RU")
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        if currentLanguage == "ru" {
+            picker.locale = Locale(identifier: "ru_RU")
+        } else {
+            picker.locale = Locale(identifier: "en_US")
+        }
         picker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
         return picker
     }()

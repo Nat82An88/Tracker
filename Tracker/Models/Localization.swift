@@ -66,4 +66,18 @@ enum Localizable {
         let format = NSLocalizedString("number_of_days", comment: "Days count format for pluralization")
         return String.localizedStringWithFormat(format, count)
     }
+    
+    // MARK: - Days Short
+    static let mondayShort = NSLocalizedString("monday_short", comment: "Monday short name")
+    static let tuesdayShort = NSLocalizedString("tuesday_short", comment: "Tuesday short name")
+    static let wednesdayShort = NSLocalizedString("wednesday_short", comment: "Wednesday short name")
+    static let thursdayShort = NSLocalizedString("thursday_short", comment: "Thursday short name")
+    static let fridayShort = NSLocalizedString("friday_short", comment: "Friday short name")
+    static let saturdayShort = NSLocalizedString("saturday_short", comment: "Saturday short name")
+    static let sundayShort = NSLocalizedString("sunday_short", comment: "Sunday short name")
+    
+    // MARK: - Onboarding
+    static let onboardingFirstTitle = NSLocalizedString("onboarding_first_title", comment: "First onboarding screen title")
+    static let onboardingSecondTitle = NSLocalizedString("onboarding_second_title", comment: "Second onboarding screen title")
+    static let onboardingButton = NSLocalizedString("onboarding_button", comment: "Onboarding button title")
 }
