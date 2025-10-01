@@ -22,7 +22,7 @@ final class ScheduleViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
-        configuration.title = "Готово"
+        configuration.title = Localizable.doneButton
         configuration.baseForegroundColor = .white
         configuration.baseBackgroundColor = UIColor(resource: .ypBlackDay)
         configuration.cornerStyle = .fixed
@@ -65,7 +65,7 @@ final class ScheduleViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Расписание"
+        title = Localizable.scheduleScreenTitle
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .medium),
             NSAttributedString.Key.foregroundColor: UIColor.ypBlackDay

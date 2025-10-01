@@ -19,7 +19,7 @@ final class HabitViewController: UIViewController {
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = Localizable.trackerNamePlaceholder
         textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -49,7 +49,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
-        label.text = "Emoji"
+        label.text = Localizable.emojiSection
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.textColor = UIColor(resource: .ypBlackDay)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -75,7 +75,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var colorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Цвет"
+        label.text = Localizable.colorSection
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.textColor = UIColor(resource: .ypBlackDay)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -110,7 +110,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(Localizable.cancelButton, for: .normal)
         button.setTitleColor(UIColor(resource: .ypRed), for: .normal)
         button.backgroundColor = .systemBackground
         button.layer.cornerRadius = 16
@@ -125,7 +125,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(Localizable.createButton, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = UIColor(resource: .ypGray)
         button.layer.cornerRadius = 16
@@ -275,7 +275,7 @@ final class HabitViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = "Новая привычка"
+        navigationItem.title = Localizable.newHabitTitle
         
         if let navigationBar = navigationController?.navigationBar {
             let appearance = UINavigationBarAppearance()
@@ -346,17 +346,17 @@ extension HabitViewController: UITableViewDataSource {
         
         switch indexPath.row {
         case 0:
-            cell.configure(title: "Категория", subtitle: selectedCategoryTitle)
+            cell.configure(title: Localizable.categoryTitle, subtitle: selectedCategoryTitle)
         case 1:
             let daysText: String?
             if selectedDays.isEmpty {
                 daysText = nil
             } else if selectedDays.count == 7 {
-                daysText = "Каждый день"
+                daysText = Localizable.everyDay
             } else {
                 daysText = selectedDays.map { $0.shortName }.joined(separator: ", ")
             }
-            cell.configure(title: "Расписание", subtitle: daysText)
+            cell.configure(title: Localizable.scheduleTitle, subtitle: daysText)
         default:
             break
         }

@@ -74,7 +74,7 @@ final class TrackerCell: UICollectionViewCell {
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title
         
-        let daysText = localizedDaysText(for: completionCount)
+        let daysText = Localizable.daysCount(completionCount)
         countLabel.text = "\(completionCount) \(daysText)"
         
         updateButtonAppearance()
@@ -142,11 +142,6 @@ final class TrackerCell: UICollectionViewCell {
             completeButton.tintColor = UIColor(resource: .ypWhite)
             completeButton.backgroundColor = cardView.backgroundColor
         }
-    }
-    
-    private func localizedDaysText(for count: Int) -> String {
-        let format = NSLocalizedString("number_of_days", comment: "Days count format")
-        return String.localizedStringWithFormat(format, count)
     }
     
     @objc private func completeButtonTapped() {

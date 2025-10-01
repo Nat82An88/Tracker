@@ -45,13 +45,13 @@ final class TrackersViewController: UIViewController {
     }()
     
     private lazy var placeholderLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Что будем отслеживать?"
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
-        label.textAlignment = .center
-        return label
-    }()
+            let label = UILabel()
+            label.text = Localizable.noTrackersPlaceholder
+            label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+            label.textColor = UIColor(resource: .ypBlackDay)
+            label.textAlignment = .center
+            return label
+        }()
     
     private lazy var datePicker: UIDatePicker = {
         let picker = UIDatePicker()
@@ -81,9 +81,6 @@ final class TrackersViewController: UIViewController {
         updateUI()
         setupGestureRecognizer()
         removeNavigationBarSeparator()
-        
-        print("Current datePicker date: \(datePicker.date)")
-        print("Current weekday: \(Calendar.current.component(.weekday, from: datePicker.date))")
     }
     
     // MARK: - Store Observers
@@ -116,7 +113,7 @@ final class TrackersViewController: UIViewController {
         let today = Date()
         
         if selectedDate > today {
-            print("Нельзя отмечать трекеры для будущих дат")
+            print(Localizable.futureDateError)
             return
         }
         
@@ -200,7 +197,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Трекеры"
+        title = Localizable.trackersTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         
@@ -247,7 +244,7 @@ final class TrackersViewController: UIViewController {
     
     private func setupSearchController() {
         searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = Localizable.searchPlaceholder
         searchController.searchBar.searchTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         searchController.searchBar.searchTextField.textColor = .gray
         searchController.searchBar.delegate = self

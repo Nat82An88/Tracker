@@ -10,7 +10,7 @@ final class EditCategoryViewController: UIViewController {
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = Localizable.categoryNamePlaceholder
         textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -27,7 +27,7 @@ final class EditCategoryViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(Localizable.doneButton, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
         button.backgroundColor = UIColor(resource: .ypBlackDay)
         button.layer.cornerRadius = 16
@@ -82,7 +82,7 @@ final class EditCategoryViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Редактирование категории"
+        title = Localizable.editCategory
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -123,11 +123,11 @@ final class EditCategoryViewController: UIViewController {
     
     private func showErrorAlert() {
         let alert = UIAlertController(
-            title: "Ошибка",
-            message: "Не удалось обновить категорию",
+            title: Localizable.errorTitle,
+            message: Localizable.errorMessage,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: Localizable.doneButton, style: .default))
         present(alert, animated: true)
     }
 }

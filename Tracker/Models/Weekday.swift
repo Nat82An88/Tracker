@@ -11,13 +11,13 @@ enum Weekday: Int, CaseIterable, Codable {
     
     var localizedName: String {
         switch self {
-        case .monday: return "Понедельник"
-        case .tuesday: return "Вторник"
-        case .wednesday: return "Среда"
-        case .thursday: return "Четверг"
-        case .friday: return "Пятница"
-        case .saturday: return "Суббота"
-        case .sunday: return "Воскресенье"
+        case .monday: return Localizable.monday
+        case .tuesday: return Localizable.tuesday
+        case .wednesday: return Localizable.wednesday
+        case .thursday: return Localizable.thursday
+        case .friday: return Localizable.friday
+        case .saturday: return Localizable.saturday
+        case .sunday: return Localizable.sunday
         }
     }
     
