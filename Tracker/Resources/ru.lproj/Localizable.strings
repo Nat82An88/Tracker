@@ -144,3 +144,21 @@
 
 /* Second onboarding screen title */
 "onboarding_second_title" = "Даже если это\nне литры воды и йога";
+
+/* Statistics screen title */
+"statistics_title" = "Статистика";
+
+/* Empty statistics placeholder */
+"no_statistics_placeholder" = "Анализировать пока нечего";
+
+/* Best period statistic title */
+"best_period" = "Лучший период";
+
+/* Perfect days statistic title */
+"perfect_days" = "Идеальные дни";
+
+/* Completed trackers statistic title */
+"completed_trackers" = "Трекеров завершено";
+
+/* Average value statistic title */
+"average_value" = "Среднее значение";

@@ -86,6 +86,22 @@ final class TrackerRecordStore: NSObject {
         return try context.count(for: request)
     }
     
+    // MARK: - New Methods for Statistics
+    
+    func fetchAllTrackers() throws -> [Tracker] {
+        let trackerRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        
+        do {
+            let trackerCDs = try context.fetch(trackerRequest)
+            return trackerCDs.compactMap { trackerCD in
+                makeTracker(from: trackerCD)
+            }
+        } catch {
+            print("Error fetching trackers: \(error)")
+            throw error
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func makeRecord(from coreData: TrackerRecordCoreData) -> TrackerRecord? {
@@ -94,6 +110,38 @@ final class TrackerRecordStore: NSObject {
         }
         
         return TrackerRecord(id: id, date: date)
+    }
+    
+    private func makeTracker(from coreData: TrackerCoreData) -> Tracker? {
+        guard let id = coreData.id,
+              let title = coreData.title,
+              let color = coreData.color,
+              let emoji = coreData.emoji,
+              let scheduleData = coreData.schedule else {
+            return nil
+        }
+        
+        let schedule = decodeSchedule(from: scheduleData)
+        let isHabit = coreData.isHabit
+        
+        return Tracker(
+            id: id,
+            title: title,
+            color: color,
+            emoji: emoji,
+            schedule: schedule,
+            isHabit: isHabit
+        )
+    }
+    
+    private func decodeSchedule(from data: Data) -> [Weekday] {
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode([Weekday].self, from: data)
+        } catch {
+            print("Error decoding schedule: \(error)")
+            return []
+        }
     }
     
     private func updateRecord(_ recordCoreData: TrackerRecordCoreData, with record: TrackerRecord) {

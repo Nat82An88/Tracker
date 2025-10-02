@@ -80,4 +80,14 @@ enum Localizable {
     static let onboardingFirstTitle = NSLocalizedString("onboarding_first_title", comment: "First onboarding screen title")
     static let onboardingSecondTitle = NSLocalizedString("onboarding_second_title", comment: "Second onboarding screen title")
     static let onboardingButton = NSLocalizedString("onboarding_button", comment: "Onboarding button title")
+    
+    // MARK: - Statistics
+    static let statisticsTitle = NSLocalizedString("statistics_title", comment: "Statistics screen title")
+    static let noStatisticsPlaceholder = NSLocalizedString("no_statistics_placeholder", comment: "Empty statistics placeholder")
+    
+    // MARK: - Statistics Items
+    static let bestPeriod = NSLocalizedString("best_period", comment: "Best period statistic title")
+    static let perfectDays = NSLocalizedString("perfect_days", comment: "Perfect days statistic title")
+    static let completedTrackers = NSLocalizedString("completed_trackers", comment: "Completed trackers statistic title")
+    static let averageValue = NSLocalizedString("average_value", comment: "Average value statistic title")
 }

@@ -77,7 +77,7 @@
 "no_trackers_placeholder" = "What will we track?";
 
 /* Days count format for pluralization */
-"number_of_days" = "%d day";
+"number_of_days" = "%d days";
 
 /* Onboarding button title */
 "onboarding_button" = "That's technology!";
@@ -141,3 +141,21 @@
 
 /* Wednesday short name */
 "wednesday_short" = "Wed";
+
+/* Statistics screen title */
+"statistics_title" = "Statistics";
+
+/* Empty statistics placeholder */
+"no_statistics_placeholder" = "No statistics to analyze yet";
+
+/* Best period statistic title */
+"best_period" = "Best period";
+
+/* Perfect days statistic title */
+"perfect_days" = "Perfect days";
+
+/* Completed trackers statistic title */
+"completed_trackers" = "Trackers completed";
+
+/* Average value statistic title */
+"average_value" = "Average value";
