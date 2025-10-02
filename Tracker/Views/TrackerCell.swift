@@ -65,6 +65,16 @@ final class TrackerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        super.updateConfiguration(using: state)
+        
+        if state.isHighlighted {
+            contentView.alpha = 0.7
+        } else {
+            contentView.alpha = 1.0
+        }
+    }
+    
     // MARK: - Configuration
     func configure(with tracker: Tracker, isCompletedToday: Bool, completionCount: Int, completionHandler: @escaping (UUID, Bool) -> Void) {
         self.trackerId = tracker.id

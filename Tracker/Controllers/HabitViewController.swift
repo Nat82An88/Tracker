@@ -4,6 +4,13 @@ final class HabitViewController: UIViewController {
     
     // MARK: - Properties
     var onSave: ((Tracker, String) -> Void)?
+    var mode: Mode = .create
+        
+        enum Mode {
+            case create
+            case edit(Tracker)
+        }
+    
     private var selectedDays: [Weekday] = []
     private var selectedEmoji: String?
     private var selectedColor: String?
@@ -164,6 +171,7 @@ final class HabitViewController: UIViewController {
         setupUI()
         setupNavigationBar()
         setupGestureRecognizer()
+        setupForMode()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -182,6 +190,33 @@ final class HabitViewController: UIViewController {
         view.endEditing(true)
     }
     
+    // MARK: - Mode Setup
+    private func setupForMode() {
+        switch mode {
+        case .create:
+            navigationItem.title = Localizable.newHabitTitle
+            createButton.setTitle(Localizable.createButton, for: .normal)
+        case .edit(let tracker):
+            navigationItem.title = Localizable.editHabitTitle
+            createButton.setTitle(Localizable.saveButton, for: .normal)
+            populateWithTracker(tracker)
+        }
+    }
+
+    private func populateWithTracker(_ tracker: Tracker) {
+        titleTextField.text = tracker.title
+        selectedDays = tracker.schedule
+        selectedEmoji = tracker.emoji
+        selectedColor = tracker.color
+        
+        // TODO: Нужно найти категорию трекера - это может потребовать дополнительной логики
+        // selectedCategoryTitle = ...
+        
+        updateCreateButtonState()
+        optionsTableView.reloadData()
+        emojiCollectionView.reloadData()
+        colorCollectionView.reloadData()
+    }
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground

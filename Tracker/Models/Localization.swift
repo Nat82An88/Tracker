@@ -27,6 +27,7 @@ enum Localizable {
     
     // MARK: - Habit Creation
     static let newHabitTitle = NSLocalizedString("new_habit_title", comment: "New habit creation screen title")
+    static let editHabitTitle = NSLocalizedString("edit_habit_title", comment: "Edit habit screen title")
     static let trackerNamePlaceholder = NSLocalizedString("tracker_name_placeholder", comment: "Tracker name input placeholder")
     static let emojiSection = NSLocalizedString("emoji_section", comment: "Emoji selection section title")
     static let colorSection = NSLocalizedString("color_section", comment: "Color selection section title")
@@ -49,6 +50,7 @@ enum Localizable {
     
     // MARK: - Alerts
     static let deleteConfirmationTitle = NSLocalizedString("delete_confirmation_title", comment: "Delete confirmation alert title")
+    static let deleteTrackerConfirmation = NSLocalizedString("delete_tracker_confirmation", comment: "Delete tracker confirmation title")
     static let deleteConfirmationMessage = NSLocalizedString("delete_confirmation_message", comment: "Delete confirmation alert message")
     static let deleteButton = NSLocalizedString("delete_button", comment: "Delete button in alert")
     static let errorTitle = NSLocalizedString("error_title", comment: "Error alert title")

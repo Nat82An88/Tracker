@@ -399,6 +399,98 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - UICollectionViewDelegate Context Menu
+extension TrackersViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            return self?.makeContextMenu(for: indexPath)
+        }
+    }
+    
+    private func makeContextMenu(for indexPath: IndexPath) -> UIMenu {
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
+        
+        let editAction = UIAction(
+            title: Localizable.editAction,
+            image: UIImage(systemName: "pencil")
+        ) { [weak self] _ in
+            self?.editTracker(tracker)
+        }
+        
+        let deleteAction = UIAction(
+            title: Localizable.deleteAction,
+            image: UIImage(systemName: "trash"),
+            attributes: .destructive
+        ) { [weak self] _ in
+            self?.deleteTracker(tracker)
+        }
+        
+        return UIMenu(title: "", children: [editAction, deleteAction])
+    }
+    
+    private func editTracker(_ tracker: Tracker) {
+        print("DEBUG: Editing tracker: \(tracker.title)")
+        
+        let habitVC = HabitViewController(trackerCategoryStore: trackerCategoryStore)
+        
+        habitVC.mode = .edit(tracker)
+        
+        habitVC.onSave = { [weak self] updatedTracker, categoryTitle in
+            self?.updateTracker(updatedTracker, in: categoryTitle)
+        }
+        
+        let navController = UINavigationController(rootViewController: habitVC)
+        present(navController, animated: true)
+    }
+    
+    private func deleteTracker(_ tracker: Tracker) {
+        let alert = UIAlertController(
+            title: Localizable.deleteTrackerConfirmation,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: Localizable.deleteAction,
+            style: .destructive
+        ) { [weak self] _ in
+            self?.performDeleteTracker(tracker)
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: Localizable.cancelButton,
+            style: .cancel
+        )
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
+    private func performDeleteTracker(_ tracker: Tracker) {
+        do {
+            try trackerStore.deleteTracker(tracker.id)
+            print("DEBUG: Tracker deleted successfully")
+            loadData()
+            updateUI()
+        } catch {
+            print("Error deleting tracker: \(error)")
+        }
+    }
+    
+    private func updateTracker(_ tracker: Tracker, in categoryTitle: String) {
+        do {
+            try trackerStore.updateTracker(tracker, in: categoryTitle)
+            print("DEBUG: Tracker updated successfully")
+            loadData()
+            updateUI()
+        } catch {
+            print("Error updating tracker: \(error)")
+        }
+    }
+}
+
 // MARK: - UISearchBarDelegate
 extension TrackersViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

@@ -162,3 +162,9 @@
 
 /* Average value statistic title */
 "average_value" = "Среднее значение";
+
+/* Delete tracker confirmation title */
+"delete_tracker_confirmation" = "Уверены, что хотите удалить трекер?";
+
+/* Edit habit screen title */
+"edit_habit_title" = "Редактирование привычки";
