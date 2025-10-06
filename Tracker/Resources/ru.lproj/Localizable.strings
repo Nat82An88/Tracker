@@ -168,3 +168,24 @@
 
 /* Edit habit screen title */
 "edit_habit_title" = "Редактирование привычки";
+
+/* Filters screen title */
+"filters_title" = "Фильтры";
+
+/* Filters button title */
+"filters_button" = "Фильтры";
+
+/* All trackers filter option */
+"all_trackers_filter" = "Все трекеры";
+
+/* Today trackers filter option */
+"today_trackers_filter" = "Трекеры на сегодня";
+
+/* Completed trackers filter option */
+"completed_trackers_filter" = "Завершенные";
+
+/* Uncompleted trackers filter option */
+"uncompleted_trackers_filter" = "Не завершенные";
+
+/* Nothing found placeholder */
+"nothing_found" = "Ничего не найдено";

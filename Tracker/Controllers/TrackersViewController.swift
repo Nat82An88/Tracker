@@ -11,6 +11,11 @@ final class TrackersViewController: UIViewController {
     private var trackerStore: TrackerStore!
     private var trackerCategoryStore: TrackerCategoryStore!
     private var trackerRecordStore: TrackerRecordStore!
+    private var currentFilter: TrackerFilter = .all {
+        didSet {
+            UserDefaults.standard.set(currentFilter.rawValue, forKey: "SelectedFilter")
+        }
+    }
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
@@ -67,9 +72,33 @@ final class TrackersViewController: UIViewController {
         return picker
     }()
     
+    private lazy var filtersButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle(Localizable.filtersButton, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
+        button.backgroundColor = UIColor(resource: .ypBlue)
+        button.layer.cornerRadius = 16
+        button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(filtersButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.1
+        
+        return button
+    }()
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let savedFilterRawValue = UserDefaults.standard.string(forKey: "SelectedFilter"),
+           let savedFilter = TrackerFilter(rawValue: savedFilterRawValue) {
+            currentFilter = savedFilter
+        }
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             fatalError("AppDelegate not found")
@@ -199,6 +228,7 @@ final class TrackersViewController: UIViewController {
         setupNavigationBar()
         setupCollectionView()
         setupPlaceholder()
+        setupFiltersButton()
     }
     
     private func setupNavigationBar() {
@@ -261,6 +291,10 @@ final class TrackersViewController: UIViewController {
     private func setupCollectionView() {
         view.addSubview(collectionView)
         
+        collectionView.alwaysBounceVertical = true
+        
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 80, right: 0)
+        
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -285,6 +319,19 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
+    private func setupFiltersButton() {
+        view.addSubview(filtersButton)
+        
+        NSLayoutConstraint.activate([
+            filtersButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filtersButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filtersButton.widthAnchor.constraint(equalToConstant: 114),
+            filtersButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        
+        updateFiltersButtonVisibility()
+    }
+    
     // MARK: - UI Update
     private func updateUI() {
         filterTrackers()
@@ -293,14 +340,58 @@ final class TrackersViewController: UIViewController {
         placeholderStackView.isHidden = hasData
         collectionView.isHidden = !hasData
         
+        if !hasData && (!searchText.isEmpty || currentFilter != .all) {
+            placeholderView.image = UIImage(named: "empty_stat")
+            placeholderLabel.text = Localizable.nothingFound
+        } else {
+            placeholderView.image = UIImage(named: "dizzy")
+            placeholderLabel.text = Localizable.noTrackersPlaceholder
+        }
+        
         collectionView.reloadData()
+        updateFiltersButtonVisibility()
+    }
+    
+    // MARK: - Filter Methods
+    private func updateFiltersButtonVisibility() {
+        let hasData = filteredCategories.contains { !$0.trackers.isEmpty }
+        filtersButton.isHidden = !hasData
+        
+        UIView.animate(withDuration: 0.3) {
+            self.filtersButton.alpha = hasData ? 1.0 : 0.0
+        }
+    }
+    
+    @objc private func filtersButtonTapped() {
+        let filtersVC = FiltersViewController(selectedFilter: currentFilter) { [weak self] selectedFilter in
+            self?.applyFilter(selectedFilter)
+        }
+        
+        let navController = UINavigationController(rootViewController: filtersVC)
+        present(navController, animated: true)
+    }
+    
+    private func applyFilter(_ filter: TrackerFilter) {
+        currentFilter = filter
+        
+        switch filter {
+        case .today:
+            datePicker.date = Date()
+            fallthrough
+        case .all:
+            break
+        case .completed, .uncompleted:
+            break
+        }
+        
+        updateUI()
     }
     
     private func filterTrackers() {
         let selectedDate = datePicker.date
         let weekday = Calendar.current.component(.weekday, from: selectedDate)
         
-        print("Filtering for date: \(selectedDate), weekday: \(weekday)")
+        print("Filtering for date: \(selectedDate), weekday: \(weekday), filter: \(currentFilter)")
         
         var dateFilteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
@@ -309,6 +400,27 @@ final class TrackersViewController: UIViewController {
                 return containsWeekday
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }
+        
+        switch currentFilter {
+        case .all, .today:
+            break
+            
+        case .completed:
+            dateFilteredCategories = dateFilteredCategories.map { category in
+                let filteredTrackers = category.trackers.filter { tracker in
+                    isTrackerCompletedToday(tracker.id)
+                }
+                return TrackerCategory(title: category.title, trackers: filteredTrackers)
+            }
+            
+        case .uncompleted:
+            dateFilteredCategories = dateFilteredCategories.map { category in
+                let filteredTrackers = category.trackers.filter { tracker in
+                    !isTrackerCompletedToday(tracker.id)
+                }
+                return TrackerCategory(title: category.title, trackers: filteredTrackers)
+            }
         }
         
         if !searchText.isEmpty {
@@ -331,16 +443,16 @@ final class TrackersViewController: UIViewController {
     // MARK: - Actions
     @objc private func addButtonTapped() {
         let habitVC = HabitViewController(
-                trackerCategoryStore: trackerCategoryStore,
-                trackerRecordStore: trackerRecordStore
-            )
-            habitVC.onSave = { [weak self] tracker, categoryTitle in
-                self?.addTracker(tracker, toCategory: categoryTitle)
-            }
-            
-            let navController = UINavigationController(rootViewController: habitVC)
-            present(navController, animated: true)
+            trackerCategoryStore: trackerCategoryStore,
+            trackerRecordStore: trackerRecordStore
+        )
+        habitVC.onSave = { [weak self] tracker, categoryTitle in
+            self?.addTracker(tracker, toCategory: categoryTitle)
         }
+        
+        let navController = UINavigationController(rootViewController: habitVC)
+        present(navController, animated: true)
+    }
     
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
         updateUI()
@@ -411,43 +523,43 @@ extension TrackersViewController: UICollectionViewDelegate {
     }
     
     private func makeContextMenu(for indexPath: IndexPath) -> UIMenu {
-            let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
-            
-            let editAction = UIAction(
-                title: Localizable.editAction,
-                image: nil
-            ) { [weak self] _ in
-                self?.editTracker(tracker)
-            }
-            
-            let deleteAction = UIAction(
-                title: Localizable.deleteAction,
-                image: nil,
-                attributes: .destructive
-            ) { [weak self] _ in
-                self?.deleteTracker(tracker)
-            }
-            
-            return UIMenu(title: "", children: [editAction, deleteAction])
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
+        
+        let editAction = UIAction(
+            title: Localizable.editAction,
+            image: nil
+        ) { [weak self] _ in
+            self?.editTracker(tracker)
         }
         
-        private func editTracker(_ tracker: Tracker) {
-            print("DEBUG: Editing tracker: \(tracker.title)")
-            
-            let habitVC = HabitViewController(
-                trackerCategoryStore: trackerCategoryStore,
-                trackerRecordStore: trackerRecordStore
-            )
-            
-            habitVC.mode = .edit(tracker)
-            
-            habitVC.onSave = { [weak self] updatedTracker, categoryTitle in
-                self?.updateTracker(updatedTracker, in: categoryTitle)
-            }
-            
-            let navController = UINavigationController(rootViewController: habitVC)
-            present(navController, animated: true)
+        let deleteAction = UIAction(
+            title: Localizable.deleteAction,
+            image: nil,
+            attributes: .destructive
+        ) { [weak self] _ in
+            self?.deleteTracker(tracker)
         }
+        
+        return UIMenu(title: "", children: [editAction, deleteAction])
+    }
+    
+    private func editTracker(_ tracker: Tracker) {
+        print("DEBUG: Editing tracker: \(tracker.title)")
+        
+        let habitVC = HabitViewController(
+            trackerCategoryStore: trackerCategoryStore,
+            trackerRecordStore: trackerRecordStore
+        )
+        
+        habitVC.mode = .edit(tracker)
+        
+        habitVC.onSave = { [weak self] updatedTracker, categoryTitle in
+            self?.updateTracker(updatedTracker, in: categoryTitle)
+        }
+        
+        let navController = UINavigationController(rootViewController: habitVC)
+        present(navController, animated: true)
+    }
     
     private func deleteTracker(_ tracker: Tracker) {
         let alert = UIAlertController(

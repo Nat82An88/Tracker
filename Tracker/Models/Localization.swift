@@ -118,4 +118,13 @@ enum Localizable {
     static let perfectDays = NSLocalizedString("perfect_days", comment: "Perfect days statistic title")
     static let completedTrackers = NSLocalizedString("completed_trackers", comment: "Completed trackers statistic title")
     static let averageValue = NSLocalizedString("average_value", comment: "Average value statistic title")
+    
+    // MARK: - Filters
+    static let filtersTitle = NSLocalizedString("filters_title", comment: "Filters screen title")
+    static let filtersButton = NSLocalizedString("filters_button", comment: "Filters button title")
+    static let allTrackersFilter = NSLocalizedString("all_trackers_filter", comment: "All trackers filter option")
+    static let todayTrackersFilter = NSLocalizedString("today_trackers_filter", comment: "Today trackers filter option")
+    static let completedTrackersFilter = NSLocalizedString("completed_trackers_filter", comment: "Completed trackers filter option")
+    static let uncompletedTrackersFilter = NSLocalizedString("uncompleted_trackers_filter", comment: "Uncompleted trackers filter option")
+    static let nothingFound = NSLocalizedString("nothing_found", comment: "Nothing found placeholder")
 }
