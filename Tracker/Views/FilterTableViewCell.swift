@@ -37,14 +37,10 @@ final class FilterTableViewCell: UITableViewCell {
     
     // MARK: - Configuration
     func configure(with title: String, isSelected: Bool) {
-        titleLabel.text = title
-        
-        // Скрываем галочку для стандартных состояний фильтра
-        let filter = TrackerFilter.allCases.first { $0.title == title }
-        let shouldShowCheckmark = isSelected && (filter?.isDefaultState == false)
-        
-        checkmarkImageView.isHidden = !shouldShowCheckmark
-    }
+            titleLabel.text = title
+            
+            checkmarkImageView.isHidden = !isSelected
+        }
     
     // MARK: - UI Setup
     private func setupUI() {
