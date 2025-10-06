@@ -65,8 +65,34 @@ enum Localizable {
     
     // MARK: - Pluralization
     static func daysCount(_ count: Int) -> String {
-        let format = NSLocalizedString("number_of_days", comment: "Days count format for pluralization")
-        return String.localizedStringWithFormat(format, count)
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        switch currentLanguage {
+        case "ru":
+            let lastDigit = count % 10
+            let lastTwoDigits = count % 100
+            
+            switch (lastDigit, lastTwoDigits) {
+            case (1, 11...):
+                return "\(count) дней"
+            case (1, _):
+                return "\(count) день"
+            case (2...4, 12...14):
+                return "\(count) дней"
+            case (2...4, _):
+                return "\(count) дня"
+            default:
+                return "\(count) дней"
+            }
+            
+        default:
+            switch count {
+            case 1:
+                return "\(count) day"
+            default:
+                return "\(count) days"
+            }
+        }
     }
     
     // MARK: - Days Short

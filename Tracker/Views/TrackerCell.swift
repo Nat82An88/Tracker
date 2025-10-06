@@ -84,9 +84,7 @@ final class TrackerCell: UICollectionViewCell {
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title
         
-        let daysText = Localizable.daysCount(completionCount)
-        countLabel.text = "\(completionCount) \(daysText)"
-        
+        countLabel.text = Localizable.daysCount(completionCount)
         updateButtonAppearance()
     }
     

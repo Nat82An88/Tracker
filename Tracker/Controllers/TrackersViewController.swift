@@ -330,14 +330,17 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func addButtonTapped() {
-        let habitVC = HabitViewController(trackerCategoryStore: trackerCategoryStore)
-        habitVC.onSave = { [weak self] tracker, categoryTitle in
-            self?.addTracker(tracker, toCategory: categoryTitle)
+        let habitVC = HabitViewController(
+                trackerCategoryStore: trackerCategoryStore,
+                trackerRecordStore: trackerRecordStore
+            )
+            habitVC.onSave = { [weak self] tracker, categoryTitle in
+                self?.addTracker(tracker, toCategory: categoryTitle)
+            }
+            
+            let navController = UINavigationController(rootViewController: habitVC)
+            present(navController, animated: true)
         }
-        
-        let navController = UINavigationController(rootViewController: habitVC)
-        present(navController, animated: true)
-    }
     
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
         updateUI()
@@ -408,40 +411,43 @@ extension TrackersViewController: UICollectionViewDelegate {
     }
     
     private func makeContextMenu(for indexPath: IndexPath) -> UIMenu {
-        let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
-        
-        let editAction = UIAction(
-            title: Localizable.editAction,
-            image: UIImage(systemName: "pencil")
-        ) { [weak self] _ in
-            self?.editTracker(tracker)
+            let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
+            
+            let editAction = UIAction(
+                title: Localizable.editAction,
+                image: nil
+            ) { [weak self] _ in
+                self?.editTracker(tracker)
+            }
+            
+            let deleteAction = UIAction(
+                title: Localizable.deleteAction,
+                image: nil,
+                attributes: .destructive
+            ) { [weak self] _ in
+                self?.deleteTracker(tracker)
+            }
+            
+            return UIMenu(title: "", children: [editAction, deleteAction])
         }
         
-        let deleteAction = UIAction(
-            title: Localizable.deleteAction,
-            image: UIImage(systemName: "trash"),
-            attributes: .destructive
-        ) { [weak self] _ in
-            self?.deleteTracker(tracker)
+        private func editTracker(_ tracker: Tracker) {
+            print("DEBUG: Editing tracker: \(tracker.title)")
+            
+            let habitVC = HabitViewController(
+                trackerCategoryStore: trackerCategoryStore,
+                trackerRecordStore: trackerRecordStore
+            )
+            
+            habitVC.mode = .edit(tracker)
+            
+            habitVC.onSave = { [weak self] updatedTracker, categoryTitle in
+                self?.updateTracker(updatedTracker, in: categoryTitle)
+            }
+            
+            let navController = UINavigationController(rootViewController: habitVC)
+            present(navController, animated: true)
         }
-        
-        return UIMenu(title: "", children: [editAction, deleteAction])
-    }
-    
-    private func editTracker(_ tracker: Tracker) {
-        print("DEBUG: Editing tracker: \(tracker.title)")
-        
-        let habitVC = HabitViewController(trackerCategoryStore: trackerCategoryStore)
-        
-        habitVC.mode = .edit(tracker)
-        
-        habitVC.onSave = { [weak self] updatedTracker, categoryTitle in
-            self?.updateTracker(updatedTracker, in: categoryTitle)
-        }
-        
-        let navController = UINavigationController(rootViewController: habitVC)
-        present(navController, animated: true)
-    }
     
     private func deleteTracker(_ tracker: Tracker) {
         let alert = UIAlertController(

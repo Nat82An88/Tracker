@@ -5,25 +5,39 @@ final class HabitViewController: UIViewController {
     // MARK: - Properties
     var onSave: ((Tracker, String) -> Void)?
     var mode: Mode = .create
-        
-        enum Mode {
-            case create
-            case edit(Tracker)
-        }
+    
+    enum Mode {
+        case create
+        case edit(Tracker)
+    }
     
     private var selectedDays: [Weekday] = []
     private var selectedEmoji: String?
     private var selectedColor: String?
     private var selectedCategoryTitle: String?
     private let trackerCategoryStore: TrackerCategoryStore
+    private let trackerRecordStore: TrackerRecordStore
     
     private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     private let colors = (1...18).map { "selection_\($0)" }
     
+    private var completedTrackersCount: Int = 0
     private var emojiCollectionHeightConstraint: NSLayoutConstraint!
     private var colorCollectionHeightConstraint: NSLayoutConstraint!
+    private var titleTextFieldTopConstraint: NSLayoutConstraint!
+    private var completedTrackersLabelHeightConstraint: NSLayoutConstraint!
     
     // MARK: - UI Elements
+    private lazy var completedTrackersLabel: UILabel = {
+        let label = UILabel()
+        label.text = Localizable.daysCount(0)
+        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = Localizable.trackerNamePlaceholder
@@ -157,8 +171,9 @@ final class HabitViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle
-    init(trackerCategoryStore: TrackerCategoryStore) {
+    init(trackerCategoryStore: TrackerCategoryStore, trackerRecordStore: TrackerRecordStore) {
         self.trackerCategoryStore = trackerCategoryStore
+        self.trackerRecordStore = trackerRecordStore
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -196,27 +211,51 @@ final class HabitViewController: UIViewController {
         case .create:
             navigationItem.title = Localizable.newHabitTitle
             createButton.setTitle(Localizable.createButton, for: .normal)
+            completedTrackersLabel.isHidden = true
+            completedTrackersLabelHeightConstraint.constant = 0
+            titleTextFieldTopConstraint.constant = 24
+            
         case .edit(let tracker):
             navigationItem.title = Localizable.editHabitTitle
             createButton.setTitle(Localizable.saveButton, for: .normal)
+            completedTrackersLabel.isHidden = false
+            completedTrackersLabelHeightConstraint.constant = 38
+            titleTextFieldTopConstraint.constant = 108
             populateWithTracker(tracker)
         }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
-
+    
     private func populateWithTracker(_ tracker: Tracker) {
         titleTextField.text = tracker.title
         selectedDays = tracker.schedule
         selectedEmoji = tracker.emoji
         selectedColor = tracker.color
-        
-        // TODO: Нужно найти категорию трекера - это может потребовать дополнительной логики
-        // selectedCategoryTitle = ...
-        
+        loadCompletionCount(for: tracker.id)
         updateCreateButtonState()
         optionsTableView.reloadData()
         emojiCollectionView.reloadData()
         colorCollectionView.reloadData()
     }
+    // MARK: - Data Loading
+    private func loadCompletionCount(for trackerId: UUID) {
+        do {
+            completedTrackersCount = try trackerRecordStore.completionCount(for: trackerId)
+            updateCompletedTrackersLabel()
+        } catch {
+            print("Error loading completion count: \(error)")
+            completedTrackersCount = 0
+            updateCompletedTrackersLabel()
+        }
+    }
+    
+    private func updateCompletedTrackersLabel() {
+        completedTrackersLabel.text = Localizable.daysCount(completedTrackersCount)
+    }
+    
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -224,6 +263,7 @@ final class HabitViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
+        contentView.addSubview(completedTrackersLabel)
         contentView.addSubview(titleTextField)
         contentView.addSubview(optionsTableView)
         contentView.addSubview(emojiLabel)
@@ -238,6 +278,9 @@ final class HabitViewController: UIViewController {
         emojiCollectionHeightConstraint = emojiCollectionView.heightAnchor.constraint(equalToConstant: 204)
         colorCollectionHeightConstraint = colorCollectionView.heightAnchor.constraint(equalToConstant: 204)
         
+        titleTextFieldTopConstraint = titleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24)
+        completedTrackersLabelHeightConstraint = completedTrackersLabel.heightAnchor.constraint(equalToConstant: 0)
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -250,10 +293,16 @@ final class HabitViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            titleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            completedTrackersLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            completedTrackersLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            completedTrackersLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            completedTrackersLabel.heightAnchor.constraint(equalToConstant: 38),
+            
+            titleTextFieldTopConstraint,
             titleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             titleTextField.heightAnchor.constraint(equalToConstant: 75),
+            
             
             optionsTableView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 24),
             optionsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
