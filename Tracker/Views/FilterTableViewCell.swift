@@ -6,7 +6,7 @@ final class FilterTableViewCell: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

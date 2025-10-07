@@ -12,7 +12,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        tableView.backgroundColor = UIColor(resource: .ypBackground)
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         tableView.dataSource = self
         tableView.delegate = self
@@ -23,8 +23,8 @@ final class ScheduleViewController: UIViewController {
     private lazy var doneButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
         configuration.title = Localizable.doneButton
-        configuration.baseForegroundColor = .white
-        configuration.baseBackgroundColor = UIColor(resource: .ypBlackDay)
+        configuration.baseForegroundColor = UIColor(resource: .ypWhite)
+        configuration.baseBackgroundColor = UIColor(resource: .ypBlack)
         configuration.cornerStyle = .fixed
         configuration.background.cornerRadius = 16
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 19, leading: 32, bottom: 19, trailing: 32)
@@ -68,7 +68,7 @@ final class ScheduleViewController: UIViewController {
         title = Localizable.scheduleScreenTitle
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            NSAttributedString.Key.foregroundColor: UIColor.ypBlackDay
+            NSAttributedString.Key.foregroundColor: UIColor.ypBlack
         ]
         
         navigationItem.hidesBackButton = true
@@ -111,7 +111,7 @@ extension ScheduleViewController: UITableViewDataSource {
             addSeparator(to: cell)
         }
         
-        cell.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        cell.backgroundColor = UIColor(resource: .ypBackground)
         return cell
     }
     

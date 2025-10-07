@@ -11,7 +11,7 @@ final class EditCategoryViewController: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = Localizable.categoryNamePlaceholder
-        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        textField.backgroundColor = UIColor(resource: .ypBackground)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -29,7 +29,7 @@ final class EditCategoryViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle(Localizable.doneButton, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
-        button.backgroundColor = UIColor(resource: .ypBlackDay)
+        button.backgroundColor = UIColor(resource: .ypBlack)
         button.layer.cornerRadius = 16
         button.isEnabled = true
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -90,7 +90,7 @@ final class EditCategoryViewController: UIViewController {
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor(resource: .ypBlackDay)
+            .foregroundColor: UIColor(resource: .ypBlack)
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance
@@ -100,7 +100,7 @@ final class EditCategoryViewController: UIViewController {
     private func updateDoneButtonState() {
         let isTextValid = !(titleTextField.text?.isEmpty ?? true) && titleTextField.text != category.title
         doneButton.isEnabled = isTextValid
-        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
+        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlack) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions

@@ -32,7 +32,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.daysCount(0)
         label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -41,7 +41,7 @@ final class HabitViewController: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = Localizable.trackerNamePlaceholder
-        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        textField.backgroundColor = UIColor(resource: .ypBackground)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -72,7 +72,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.emojiSection
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -98,7 +98,7 @@ final class HabitViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.colorSection
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -147,7 +147,7 @@ final class HabitViewController: UIViewController {
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setTitle(Localizable.createButton, for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
         button.backgroundColor = UIColor(resource: .ypGray)
         button.layer.cornerRadius = 16
         button.isEnabled = false
@@ -381,7 +381,7 @@ final class HabitViewController: UIViewController {
         let isCategorySelected = selectedCategoryTitle != nil
         
         createButton.isEnabled = isTitleValid && isScheduleSelected && isEmojiSelected && isColorSelected && isCategorySelected
-        createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
+        createButton.backgroundColor = createButton.isEnabled ? UIColor(resource: .ypBlack) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions

@@ -11,7 +11,7 @@ final class StatisticsViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.statisticsTitle
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -52,7 +52,7 @@ final class StatisticsViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.noStatisticsPlaceholder
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .center
         return label
     }()

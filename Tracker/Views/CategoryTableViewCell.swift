@@ -8,7 +8,7 @@ final class CategoryTableViewCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -49,7 +49,7 @@ final class CategoryTableViewCell: UITableViewCell {
     
     // MARK: - Private Methods
     private func setupUI() {
-        backgroundColor = UIColor(resource: .ypBackgroundDay)
+        backgroundColor = UIColor(resource: .ypBackground)
         
         contentView.addSubview(titleLabel)
         contentView.addSubview(checkmarkImageView)

@@ -14,7 +14,7 @@ final class FiltersViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        tableView.backgroundColor = UIColor(resource: .ypBackground)
         tableView.register(FilterTableViewCell.self, forCellReuseIdentifier: "FilterCell")
         tableView.dataSource = self
         tableView.delegate = self
@@ -94,7 +94,7 @@ extension FiltersViewController: UITableViewDataSource {
             addSeparator(to: cell)
         }
         
-        cell.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        cell.backgroundColor = UIColor(resource: .ypBackground)
         return cell
     }
 }

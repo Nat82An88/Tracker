@@ -43,7 +43,7 @@ final class CategoriesViewController: UIViewController {
         let label = UILabel()
         label.text = Localizable.habitsEventsGrouped
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -53,7 +53,7 @@ final class CategoriesViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle(Localizable.addCategory, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
-        button.backgroundColor = UIColor(resource: .ypBlackDay)
+        button.backgroundColor = UIColor(resource: .ypBlack)
         button.layer.cornerRadius = 16
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
@@ -126,7 +126,7 @@ final class CategoriesViewController: UIViewController {
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor(resource: .ypBlackDay)
+            .foregroundColor: UIColor(resource: .ypBlack)
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance

@@ -17,7 +17,7 @@ final class StatisticCell: UICollectionViewCell {
     private let valueLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .left
         return label
     }()
@@ -25,7 +25,7 @@ final class StatisticCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .left
         return label
     }()
