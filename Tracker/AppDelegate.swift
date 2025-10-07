@@ -1,5 +1,6 @@
 import UIKit
 import CoreData
+import AppMetricaCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - App Lifecycle
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        AnalyticsService.activate()
+        
+        print("AppMetrica configured with API key")
         
         let defaults = UserDefaults.standard
         if !defaults.bool(forKey: "hasPreloadedData") {

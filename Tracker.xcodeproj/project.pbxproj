@@ -10,6 +10,10 @@
 		E417C4C02E94F487006B36B9 /* InlineSnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E417C4BF2E94F487006B36B9 /* InlineSnapshotTesting */; };
 		E417C4C22E94F487006B36B9 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E417C4C12E94F487006B36B9 /* SnapshotTesting */; };
 		E417C4C42E94F487006B36B9 /* SnapshotTestingCustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = E417C4C32E94F487006B36B9 /* SnapshotTestingCustomDump */; };
+		E417C5832E954D0C006B36B9 /* AppMetricaAdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = E417C5822E954D0C006B36B9 /* AppMetricaAdSupport */; };
+		E417C5852E954D0C006B36B9 /* AppMetricaCore in Frameworks */ = {isa = PBXBuildFile; productRef = E417C5842E954D0C006B36B9 /* AppMetricaCore */; };
+		E417C5872E954D0C006B36B9 /* AppMetricaCrashes in Frameworks */ = {isa = PBXBuildFile; productRef = E417C5862E954D0C006B36B9 /* AppMetricaCrashes */; };
+		E417C5892E954D0C006B36B9 /* AppMetricaLibraryAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = E417C5882E954D0C006B36B9 /* AppMetricaLibraryAdapter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +72,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E417C5892E954D0C006B36B9 /* AppMetricaLibraryAdapter in Frameworks */,
+				E417C5872E954D0C006B36B9 /* AppMetricaCrashes in Frameworks */,
+				E417C5832E954D0C006B36B9 /* AppMetricaAdSupport in Frameworks */,
+				E417C5852E954D0C006B36B9 /* AppMetricaCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +146,10 @@
 			);
 			name = Tracker;
 			packageProductDependencies = (
+				E417C5822E954D0C006B36B9 /* AppMetricaAdSupport */,
+				E417C5842E954D0C006B36B9 /* AppMetricaCore */,
+				E417C5862E954D0C006B36B9 /* AppMetricaCrashes */,
+				E417C5882E954D0C006B36B9 /* AppMetricaLibraryAdapter */,
 			);
 			productName = Tracker;
 			productReference = E450C88C2E50865E00577276 /* Tracker.app */;
@@ -174,6 +186,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E417C4BE2E94F487006B36B9 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E450C88D2E50865E00577276 /* Products */;
@@ -495,6 +508,14 @@
 				minimumVersion = 1.18.7;
 			};
 		};
+		E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appmetrica/appmetrica-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.13.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -512,6 +533,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E417C4BE2E94F487006B36B9 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTestingCustomDump;
+		};
+		E417C5822E954D0C006B36B9 /* AppMetricaAdSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaAdSupport;
+		};
+		E417C5842E954D0C006B36B9 /* AppMetricaCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaCore;
+		};
+		E417C5862E954D0C006B36B9 /* AppMetricaCrashes */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaCrashes;
+		};
+		E417C5882E954D0C006B36B9 /* AppMetricaLibraryAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E417C5812E954D0B006B36B9 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaLibraryAdapter;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
