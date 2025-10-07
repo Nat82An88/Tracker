@@ -37,10 +37,10 @@ final class FilterTableViewCell: UITableViewCell {
     
     // MARK: - Configuration
     func configure(with title: String, isSelected: Bool) {
-            titleLabel.text = title
-            
-            checkmarkImageView.isHidden = !isSelected
-        }
+        titleLabel.text = title
+        
+        checkmarkImageView.isHidden = !isSelected
+    }
     
     // MARK: - UI Setup
     private func setupUI() {
