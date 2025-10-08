@@ -12,7 +12,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        tableView.backgroundColor = UIColor(resource: .ypBackground)
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         tableView.dataSource = self
         tableView.delegate = self
@@ -22,9 +22,9 @@ final class ScheduleViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
-        configuration.title = "Готово"
-        configuration.baseForegroundColor = .white
-        configuration.baseBackgroundColor = UIColor(resource: .ypBlackDay)
+        configuration.title = Localizable.doneButton
+        configuration.baseForegroundColor = UIColor(resource: .ypWhite)
+        configuration.baseBackgroundColor = UIColor(resource: .ypBlack)
         configuration.cornerStyle = .fixed
         configuration.background.cornerRadius = 16
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 19, leading: 32, bottom: 19, trailing: 32)
@@ -65,10 +65,10 @@ final class ScheduleViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Расписание"
+        title = Localizable.scheduleScreenTitle
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            NSAttributedString.Key.foregroundColor: UIColor.ypBlackDay
+            NSAttributedString.Key.foregroundColor: UIColor.ypBlack
         ]
         
         navigationItem.hidesBackButton = true
@@ -84,7 +84,10 @@ final class ScheduleViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - Table View Data Source
+============================ */
+
 extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Weekday.allCases.count
@@ -111,7 +114,7 @@ extension ScheduleViewController: UITableViewDataSource {
             addSeparator(to: cell)
         }
         
-        cell.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        cell.backgroundColor = UIColor(resource: .ypBackground)
         return cell
     }
     
@@ -130,7 +133,10 @@ extension ScheduleViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75

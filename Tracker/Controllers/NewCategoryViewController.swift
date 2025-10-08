@@ -9,8 +9,8 @@ final class NewCategoryViewController: UIViewController {
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
-        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        textField.placeholder = Localizable.categoryNamePlaceholder
+        textField.backgroundColor = UIColor(resource: .ypBackground)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -25,7 +25,7 @@ final class NewCategoryViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(Localizable.doneButton, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
         button.backgroundColor = UIColor(resource: .ypGray)
         button.layer.cornerRadius = 16
@@ -73,15 +73,15 @@ final class NewCategoryViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Новая категория"
-            
+        title = Localizable.newCategory
+        
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(resource: .ypWhite)
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor(resource: .ypBlackDay)
+            .foregroundColor: UIColor(resource: .ypBlack)
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance
@@ -91,7 +91,7 @@ final class NewCategoryViewController: UIViewController {
     private func updateDoneButtonState() {
         let isTextValid = !(titleTextField.text?.isEmpty ?? true)
         doneButton.isEnabled = isTextValid
-        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
+        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlack) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions
@@ -114,7 +114,10 @@ final class NewCategoryViewController: UIViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+/* ===========================
+   # MARK: - Text Field Delegate
+============================ */
+
 extension NewCategoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

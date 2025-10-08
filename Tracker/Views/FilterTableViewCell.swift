@@ -1,11 +1,9 @@
 import UIKit
 
-final class CategoryTableViewCell: UITableViewCell {
-    
-    static let identifier = "CategoryTableViewCell"
+final class FilterTableViewCell: UITableViewCell {
     
     // MARK: - UI Elements
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         label.textColor = UIColor(resource: .ypBlack)
@@ -13,7 +11,7 @@ final class CategoryTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let checkmarkImageView: UIImageView = {
+    private lazy var checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "checkmark")
         imageView.tintColor = UIColor(resource: .ypBlue)
@@ -23,17 +21,14 @@ final class CategoryTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    private let separatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(resource: .ypGray)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+        self.backgroundColor = .clear
+        self.contentView.backgroundColor = .clear
+        accessoryType = .none
+        selectionStyle = .none
     }
     
     required init?(coder: NSCoder) {
@@ -41,41 +36,26 @@ final class CategoryTableViewCell: UITableViewCell {
     }
     
     // MARK: - Configuration
-    func configure(with title: String, isSelected: Bool, isLastCell: Bool) {
+    func configure(with title: String, isSelected: Bool) {
         titleLabel.text = title
+        
         checkmarkImageView.isHidden = !isSelected
-        separatorView.isHidden = isLastCell
     }
     
-    // MARK: - Private Methods
+    // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = UIColor(resource: .ypBackground)
-        
         contentView.addSubview(titleLabel)
         contentView.addSubview(checkmarkImageView)
-        contentView.addSubview(separatorView)
         
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: checkmarkImageView.leadingAnchor, constant: -16),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: checkmarkImageView.leadingAnchor, constant: -8),
             
             checkmarkImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             checkmarkImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             checkmarkImageView.widthAnchor.constraint(equalToConstant: 24),
-            checkmarkImageView.heightAnchor.constraint(equalToConstant: 24),
-            
-            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
+            checkmarkImageView.heightAnchor.constraint(equalToConstant: 24)
         ])
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel.text = nil
-        checkmarkImageView.isHidden = true
-        separatorView.isHidden = false
     }
 }

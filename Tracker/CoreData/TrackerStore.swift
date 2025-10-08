@@ -2,11 +2,13 @@ import CoreData
 
 final class TrackerStore: NSObject {
     
+    // MARK: - Properties
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
     
     var onTrackersDidChange: (([Tracker]) -> Void)?
     
+    // MARK: - Initialization
     init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
@@ -16,12 +18,15 @@ final class TrackerStore: NSObject {
     // MARK: - Fetched Results Controller Setup
     private func setupFetchedResultsController() {
         let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "category.title", ascending: true),
+            NSSortDescriptor(key: "title", ascending: true)
+        ]
         
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: context,
-            sectionNameKeyPath: nil,
+            sectionNameKeyPath: "category.title",
             cacheName: nil
         )
         
@@ -47,34 +52,66 @@ final class TrackerStore: NSObject {
     }
     
     func addTracker(_ tracker: Tracker, to categoryTitle: String) throws {
-        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
-        request.predicate = NSPredicate(format: "title == %@", categoryTitle)
-        
-        let existingCategories = try context.fetch(request)
-        let category: TrackerCategoryCoreData
-        
-        if let existingCategory = existingCategories.first {
-            category = existingCategory
-        } else {
-            category = TrackerCategoryCoreData(context: context)
-            category.title = categoryTitle
-        }
+        let category = try getOrCreateCategory(with: categoryTitle)
         
         let trackerCoreData = TrackerCoreData(context: context)
         updateTracker(trackerCoreData, with: tracker)
-        
-        if let existingTrackers = category.trackers as? Set<TrackerCoreData> {
-            var updatedTrackers = existingTrackers
-            updatedTrackers.insert(trackerCoreData)
-            category.trackers = NSSet(set: updatedTrackers)
-        } else {
-            category.trackers = NSSet(array: [trackerCoreData])
-        }
+        trackerCoreData.category = category
         
         try context.save()
     }
     
+    func deleteTracker(_ id: UUID) throws {
+        let tracker = try fetchTracker(by: id)
+        let recordRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        recordRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        let records = try context.fetch(recordRequest)
+        records.forEach { context.delete($0) }
+        
+        context.delete(tracker)
+        try context.save()
+    }
+    
+    func updateTracker(_ tracker: Tracker, in categoryTitle: String) throws {
+        let existingTracker = try fetchTracker(by: tracker.id)
+        let category = try getOrCreateCategory(with: categoryTitle)
+        
+        updateTracker(existingTracker, with: tracker)
+        existingTracker.category = category
+        
+        try context.save()
+    }
+    
+    func fetchTracker(by id: UUID) throws -> TrackerCoreData {
+        let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        let trackers = try context.fetch(request)
+        
+        guard let tracker = trackers.first else {
+            throw TrackerStoreError.trackerNotFound
+        }
+        
+        return tracker
+    }
+    
     // MARK: - Private Methods
+    
+    private func getOrCreateCategory(with title: String) throws -> TrackerCategoryCoreData {
+        let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+        request.predicate = NSPredicate(format: "title == %@", title)
+        
+        let existingCategories = try context.fetch(request)
+        
+        if let existingCategory = existingCategories.first {
+            return existingCategory
+        } else {
+            let category = TrackerCategoryCoreData(context: context)
+            category.title = title
+            return category
+        }
+    }
     
     private func makeTracker(from coreData: TrackerCoreData) -> Tracker? {
         guard let id = coreData.id,
@@ -128,5 +165,14 @@ final class TrackerStore: NSObject {
 extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         notifyTrackersChanged()
+    }
+}
+
+// MARK: - Error Handling
+extension TrackerStore {
+    enum TrackerStoreError: Error {
+        case trackerNotFound
+        case invalidTrackerData
+        case categoryNotFound
     }
 }

@@ -15,19 +15,19 @@ final class TabBarController: UITabBarController {
             return
         }
         let trackersNavVC = UINavigationController(rootViewController: TrackersViewController())
-        let statisticsVC = StatisticsViewController()
+        let statisticsNavVC = UINavigationController(rootViewController: StatisticsViewController())
         
         trackersNavVC.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: Localizable.trackersTab,
             image: UIImage(resource: .trackerLogo),
             selectedImage: nil
         )
         
-        statisticsVC.tabBarItem = UITabBarItem(
-            title: "Статистика",
-            image: UIImage(resource: .statisticLogo),
-            selectedImage: nil
-        )
+        statisticsNavVC.tabBarItem = UITabBarItem(
+                    title: Localizable.statisticsTab,
+                    image: UIImage(resource: .statisticLogo),
+                    selectedImage: nil
+                )
         
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 10, weight: .medium),
@@ -35,9 +35,7 @@ final class TabBarController: UITabBarController {
         ]
         UITabBarItem.appearance().setTitleTextAttributes(attributes, for: .normal)
         
-        statisticsVC.tabBarItem.isEnabled = false
-        
-        viewControllers = [trackersNavVC, statisticsVC]
+        viewControllers = [trackersNavVC, statisticsNavVC]
         
         tabBar.backgroundColor = .systemBackground
         tabBar.tintColor = UIColor(resource: .ypBlue)

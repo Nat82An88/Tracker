@@ -10,8 +10,8 @@ final class EditCategoryViewController: UIViewController {
     // MARK: - UI Elements
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
-        textField.backgroundColor = UIColor(resource: .ypBackgroundDay)
+        textField.placeholder = Localizable.categoryNamePlaceholder
+        textField.backgroundColor = UIColor(resource: .ypBackground)
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -27,9 +27,9 @@ final class EditCategoryViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(Localizable.doneButton, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
-        button.backgroundColor = UIColor(resource: .ypBlackDay)
+        button.backgroundColor = UIColor(resource: .ypBlack)
         button.layer.cornerRadius = 16
         button.isEnabled = true
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -82,7 +82,7 @@ final class EditCategoryViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Редактирование категории"
+        title = Localizable.editCategory
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -90,7 +90,7 @@ final class EditCategoryViewController: UIViewController {
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor(resource: .ypBlackDay)
+            .foregroundColor: UIColor(resource: .ypBlack)
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance
@@ -100,7 +100,7 @@ final class EditCategoryViewController: UIViewController {
     private func updateDoneButtonState() {
         let isTextValid = !(titleTextField.text?.isEmpty ?? true) && titleTextField.text != category.title
         doneButton.isEnabled = isTextValid
-        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlackDay) : UIColor(resource: .ypGray)
+        doneButton.backgroundColor = isTextValid ? UIColor(resource: .ypBlack) : UIColor(resource: .ypGray)
     }
     
     // MARK: - Actions
@@ -123,16 +123,19 @@ final class EditCategoryViewController: UIViewController {
     
     private func showErrorAlert() {
         let alert = UIAlertController(
-            title: "Ошибка",
-            message: "Не удалось обновить категорию",
+            title: Localizable.errorTitle,
+            message: Localizable.errorMessage,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: Localizable.doneButton, style: .default))
         present(alert, animated: true)
     }
 }
 
-// MARK: - UITextFieldDelegate
+/* ===========================
+   # MARK: - Text Field Delegate
+============================ */
+
 extension EditCategoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

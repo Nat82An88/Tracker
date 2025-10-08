@@ -41,9 +41,9 @@ final class CategoriesViewController: UIViewController {
     
     private lazy var placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно\nобъединить по смыслу"
+        label.text = Localizable.habitsEventsGrouped
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -51,9 +51,9 @@ final class CategoriesViewController: UIViewController {
     
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle(Localizable.addCategory, for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhite), for: .normal)
-        button.backgroundColor = UIColor(resource: .ypBlackDay)
+        button.backgroundColor = UIColor(resource: .ypBlack)
         button.layer.cornerRadius = 16
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
@@ -84,7 +84,7 @@ final class CategoriesViewController: UIViewController {
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = UIColor(resource: .ypWhite)
-        title = "Категория"
+        title = Localizable.categoryTitle
         
         view.addSubview(tableView)
         view.addSubview(placeholderStackView)
@@ -126,7 +126,7 @@ final class CategoriesViewController: UIViewController {
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor(resource: .ypBlackDay)
+            .foregroundColor: UIColor(resource: .ypBlack)
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance
@@ -153,7 +153,7 @@ final class CategoriesViewController: UIViewController {
         }
         
         viewModel.onError = { [weak self] error in
-            self?.showErrorAlert(message: "Произошла ошибка: \(error.localizedDescription)")
+            self?.showErrorAlert(message: "\(Localizable.errorMessage): \(error.localizedDescription)")
         }
     }
     
@@ -171,7 +171,7 @@ final class CategoriesViewController: UIViewController {
     // MARK: - Context Menu Configuration
     private func makeContextMenu(for category: TrackerCategory, at indexPath: IndexPath) -> UIMenu {
         let editAction = UIAction(
-            title: "Редактировать",
+            title: Localizable.editAction,
             image: nil,
             attributes: []
         ) { [weak self] _ in
@@ -179,7 +179,7 @@ final class CategoriesViewController: UIViewController {
         }
         
         let deleteAction = UIAction(
-            title: "Удалить",
+            title: Localizable.deleteAction,
             image: nil,
             attributes: .destructive
         ) { [weak self] _ in
@@ -213,16 +213,16 @@ final class CategoriesViewController: UIViewController {
     
     private func showDeleteConfirmation(for category: TrackerCategory, at indexPath: IndexPath) {
         let alertController = UIAlertController(
-            title: "Эта категория точно не нужна?",
-            message: nil,
+            title: Localizable.deleteConfirmationTitle,
+            message: Localizable.deleteConfirmationMessage,
             preferredStyle: .actionSheet
         )
         
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Localizable.deleteButton, style: .destructive) { [weak self] _ in
             self?.deleteCategory(at: indexPath)
         }
         
-        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
+        let cancelAction = UIAlertAction(title: Localizable.cancelButton, style: .cancel)
         
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
@@ -234,17 +234,17 @@ final class CategoriesViewController: UIViewController {
         do {
             try viewModel.deleteCategory(at: indexPath.row)
         } catch {
-            showErrorAlert(message: "Не удалось удалить категорию")
+            showErrorAlert(message: "\(Localizable.errorMessage)")
         }
     }
     
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(
-            title: "Ошибка",
+            title: Localizable.errorTitle,
             message: message,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: Localizable.doneButton, style: .default))
         present(alert, animated: true)
     }
     
@@ -257,7 +257,10 @@ final class CategoriesViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - Table View Data Source
+============================ */
+
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.getCategoriesCount()
@@ -287,7 +290,10 @@ extension CategoriesViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.handleCategorySelection(at: indexPath.row)

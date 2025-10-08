@@ -38,7 +38,7 @@ final class TrackerCell: UICollectionViewCell {
     private let countLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         return label
     }()
     
@@ -65,6 +65,16 @@ final class TrackerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        super.updateConfiguration(using: state)
+        
+        if state.isHighlighted {
+            contentView.alpha = 0.7
+        } else {
+            contentView.alpha = 1.0
+        }
+    }
+    
     // MARK: - Configuration
     func configure(with tracker: Tracker, isCompletedToday: Bool, completionCount: Int, completionHandler: @escaping (UUID, Bool) -> Void) {
         self.trackerId = tracker.id
@@ -73,8 +83,8 @@ final class TrackerCell: UICollectionViewCell {
         cardView.backgroundColor = UIColor(named: tracker.color)
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.title
-        countLabel.text = "\(completionCount) \(daysText(for: completionCount))"
         
+        countLabel.text = Localizable.daysCount(completionCount)
         updateButtonAppearance()
     }
     
@@ -137,20 +147,8 @@ final class TrackerCell: UICollectionViewCell {
             completeButton.backgroundColor = cardView.backgroundColor?.withAlphaComponent(0.3)
         } else {
             completeButton.setImage(UIImage(systemName: "plus"), for: .normal)
-            completeButton.tintColor = UIColor(resource: .ypWhite); completeButton.backgroundColor = cardView.backgroundColor
-        }
-    }
-    
-    private func daysText(for count: Int) -> String {
-        guard count >= 0 else { return "дней" }
-        
-        switch count % 10 {
-        case 1 where count % 100 != 11:
-            return "день"
-        case 2...4 where count % 100 < 10 || count % 100 >= 20:
-            return "дня"
-        default:
-            return "дней"
+            completeButton.tintColor = UIColor(resource: .ypWhite)
+            completeButton.backgroundColor = cardView.backgroundColor
         }
     }
     

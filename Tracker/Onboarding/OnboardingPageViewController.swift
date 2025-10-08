@@ -16,7 +16,7 @@ final class OnboardingPageViewController: UIPageViewController {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = initialPage
-        pageControl.currentPageIndicatorTintColor = .ypBlackDay
+        pageControl.currentPageIndicatorTintColor = .ypBlack
         pageControl.pageIndicatorTintColor = .ypGray
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         return pageControl
@@ -46,14 +46,14 @@ final class OnboardingPageViewController: UIPageViewController {
         
         let firstPage = OnboardingViewController(
             backgroundImage: UIImage(resource: .backgroundFirst),
-            title: "Отслеживайте только\nто, что хотите",
-            buttonTitle: "Вот это технологии!"
+            titleKey: "onboarding_first_title",
+            buttonTitleKey: "onboarding_button"
         )
         
         let secondPage = OnboardingViewController(
             backgroundImage: UIImage(resource: .backgroundSecond),
-            title: "Даже если это\nне литры воды и йога",
-            buttonTitle: "Вот это технологии!"
+            titleKey: "onboarding_second_title",
+            buttonTitleKey: "onboarding_button"
         )
         
         pages = [firstPage, secondPage]

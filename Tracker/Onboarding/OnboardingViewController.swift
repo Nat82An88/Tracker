@@ -8,6 +8,14 @@ final class OnboardingViewController: UIViewController {
     private let buttonTitle: String
     var onButtonTap: (() -> Void)?
     
+    // MARK: - Initialization
+    init(backgroundImage: UIImage?, titleKey: String, buttonTitleKey: String) {
+        self.backgroundImage = backgroundImage
+        self.titleText = NSLocalizedString(titleKey, comment: "")
+        self.buttonTitle = NSLocalizedString(buttonTitleKey, comment: "")
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     // MARK: - Constants
     private enum Constants {
         static let titleFontSize: CGFloat = 32
@@ -36,7 +44,7 @@ final class OnboardingViewController: UIViewController {
         let label = UILabel()
         label.text = titleText
         label.font = UIFont.systemFont(ofSize: Constants.titleFontSize, weight: .bold)
-        label.textColor = UIColor(resource: .ypBlackDay)
+        label.textColor = UIColor(resource: .ypBlack)
         label.textAlignment = .center
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
@@ -60,7 +68,7 @@ final class OnboardingViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle(buttonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .ypBlackDay
+        button.backgroundColor = .ypBlack
         button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.buttonFontSize, weight: .medium)
         button.layer.cornerRadius = Constants.buttonCornerRadius
         button.layer.masksToBounds = true
