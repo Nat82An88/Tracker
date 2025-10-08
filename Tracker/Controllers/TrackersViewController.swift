@@ -555,6 +555,7 @@ extension TrackersViewController: UICollectionViewDelegate {
             attributes: .destructive
         ) { [weak self] _ in
             self?.analyticsService.report(event: "click", params: ["screen": "Main", "item": "delete"])
+            self?.deleteTracker(tracker)
         }
         
         return UIMenu(title: "", children: [editAction, deleteAction])

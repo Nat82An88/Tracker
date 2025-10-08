@@ -41,7 +41,6 @@ final class TrackerCategoryStore: NSObject {
     }
     
     // MARK: - Public Methods
-    
     func fetchAllCategories() throws -> [TrackerCategory] {
         return (fetchedResultsController.fetchedObjects ?? []).compactMap { makeCategory(from: $0) }
     }
@@ -87,8 +86,25 @@ final class TrackerCategoryStore: NSObject {
         return categories.first.flatMap { makeCategory(from: $0) }
     }
     
+    func getCategory(for tracker: Tracker) -> TrackerCategory? {
+            let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+            request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+            
+            do {
+                let trackers = try context.fetch(request)
+                if let trackerCoreData = trackers.first,
+                   let categoryCoreData = trackerCoreData.category,
+                   let categoryTitle = categoryCoreData.title {
+                    return TrackerCategory(title: categoryTitle, trackers: [])
+                }
+            } catch {
+                print("Error fetching category for tracker: \(error)")
+            }
+            
+            return nil
+        }
+
     // MARK: - Private Methods
-    
     private func makeCategory(from coreData: TrackerCategoryCoreData) -> TrackerCategory? {
         guard let title = coreData.title,
               let trackersSet = coreData.trackers as? Set<TrackerCoreData> else {

@@ -234,6 +234,11 @@ final class HabitViewController: UIViewController {
         selectedDays = tracker.schedule
         selectedEmoji = tracker.emoji
         selectedColor = tracker.color
+        
+        if let category = trackerCategoryStore.getCategory(for: tracker) {
+            selectedCategoryTitle = category.title
+        }
+        
         loadCompletionCount(for: tracker.id)
         updateCreateButtonState()
         optionsTableView.reloadData()
@@ -395,17 +400,31 @@ final class HabitViewController: UIViewController {
               let color = selectedColor,
               let categoryTitle = selectedCategoryTitle else { return }
         
-        let newTracker = Tracker(
-            title: title,
-            color: color,
-            emoji: emoji,
-            schedule: selectedDays,
-            isHabit: true
-        )
+        switch mode {
+        case .create:
+            let newTracker = Tracker(
+                title: title,
+                color: color,
+                emoji: emoji,
+                schedule: selectedDays,
+                isHabit: true
+            )
+            print("Creating new tracker: '\(title)'")
+            onSave?(newTracker, categoryTitle)
+            
+        case .edit(let originalTracker):
+            let updatedTracker = Tracker(
+                id: originalTracker.id,
+                title: title,
+                color: color,
+                emoji: emoji,
+                schedule: selectedDays,
+                isHabit: originalTracker.isHabit
+            )
+            print("Updating tracker: '\(title)' with ID: \(originalTracker.id)")
+            onSave?(updatedTracker, categoryTitle)
+        }
         
-        print("Creating tracker: '\(title)' with schedule: \(selectedDays.map { $0.rawValue })")
-        
-        onSave?(newTracker, categoryTitle)
         dismiss(animated: true)
     }
     
@@ -487,7 +506,6 @@ extension HabitViewController: UITableViewDelegate {
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDaysSelected = { [weak self] days in
                 self?.selectedDays = days
-                // Отложенное обновление таблицы
                 DispatchQueue.main.async {
                     self?.optionsTableView.reloadData()
                     self?.updateCreateButtonState()
