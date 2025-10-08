@@ -114,7 +114,10 @@ final class NewCategoryViewController: UIViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+/* ===========================
+   # MARK: - Text Field Delegate
+============================ */
+
 extension NewCategoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

@@ -132,7 +132,10 @@ final class EditCategoryViewController: UIViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+/* ===========================
+   # MARK: - Text Field Delegate
+============================ */
+
 extension EditCategoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

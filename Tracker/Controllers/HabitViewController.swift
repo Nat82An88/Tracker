@@ -378,6 +378,7 @@ final class HabitViewController: UIViewController {
         }
     }
     
+    // MARK: - Button State
     private func updateCreateButtonState() {
         let isTitleValid = !(titleTextField.text?.isEmpty ?? true)
         let isScheduleSelected = !selectedDays.isEmpty
@@ -436,7 +437,10 @@ final class HabitViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - Table View Data Source
+============================ */
+
 extension HabitViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
@@ -468,7 +472,10 @@ extension HabitViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
@@ -519,7 +526,10 @@ extension HabitViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - UICollectionViewDataSource
+/* ===========================
+   # MARK: - Collection View Data Source
+============================ */
+
 extension HabitViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView {
@@ -556,7 +566,10 @@ extension HabitViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
+/* ===========================
+   # MARK: - Collection View Delegate Flow Layout
+============================ */
+
 extension HabitViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 52, height: 52)
@@ -591,7 +604,10 @@ extension HabitViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - UITextFieldDelegate
+/* ===========================
+   # MARK: - Text Field Delegate
+============================ */
+
 extension HabitViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

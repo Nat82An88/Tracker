@@ -257,7 +257,10 @@ final class CategoriesViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - Table View Data Source
+============================ */
+
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.getCategoriesCount()
@@ -287,7 +290,10 @@ extension CategoriesViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.handleCategorySelection(at: indexPath.row)

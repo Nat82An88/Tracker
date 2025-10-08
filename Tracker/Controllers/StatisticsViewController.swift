@@ -293,7 +293,10 @@ final class StatisticsViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
+/* ===========================
+   # MARK: - Collection View Data Source
+============================ */
+
 extension StatisticsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return statisticsData.count
@@ -316,7 +319,10 @@ extension StatisticsViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
+/* ===========================
+   # MARK: - Collection View Delegate Flow Layout
+============================ */
+
 extension StatisticsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = collectionView.frame.width

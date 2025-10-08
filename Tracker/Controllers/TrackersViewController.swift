@@ -483,7 +483,10 @@ final class TrackersViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
+/* ===========================
+   # MARK: - Collection View Data Source
+============================ */
+
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return filteredCategories.count
@@ -521,7 +524,10 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
+/* ===========================
+   # MARK: - Collection View Delegate Flow Layout
+============================ */
+
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let availableWidth = max(0, collectionView.frame.width - 16)
@@ -530,7 +536,10 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - UICollectionViewDelegate Context Menu
+/* ===========================
+   # MARK: - Collection View Delegate Context Menu
+============================ */
+
 extension TrackersViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
@@ -627,7 +636,10 @@ extension TrackersViewController: UICollectionViewDelegate {
     }
 }
 
-// MARK: - UISearchBarDelegate
+/* ===========================
+   # MARK: - Search Bar Delegate
+============================ */
+
 extension TrackersViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchText = searchText

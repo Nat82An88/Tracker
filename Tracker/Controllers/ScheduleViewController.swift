@@ -84,7 +84,10 @@ final class ScheduleViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - Table View Data Source
+============================ */
+
 extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Weekday.allCases.count
@@ -130,7 +133,10 @@ extension ScheduleViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75

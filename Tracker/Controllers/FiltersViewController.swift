@@ -74,7 +74,10 @@ final class FiltersViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
+/* ===========================
+   # MARK: - TableView Data Source
+============================ */
+
 extension FiltersViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filters.count
@@ -99,7 +102,10 @@ extension FiltersViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+/* ===========================
+   # MARK: - Table View Delegate
+============================ */
+
 extension FiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
