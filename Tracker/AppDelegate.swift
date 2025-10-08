@@ -3,7 +3,7 @@ import CoreData
 import AppMetricaCore
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Store Properties
     private(set) lazy var trackerCategoryStore: TrackerCategoryStore = {

@@ -122,12 +122,12 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        analyticsService.report(event: "open", params: ["screen": "Main"])
+        analyticsService.report(.open(screen: .main))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        analyticsService.report(event: "close", params: ["screen": "Main"])
+        analyticsService.report(.close(screen: .main))
     }
     
     // MARK: - Store Observers
@@ -376,7 +376,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func filtersButtonTapped() {
-        analyticsService.report(event: "click", params: ["screen": "Main", "item": "filter"])
+        analyticsService.report(.click(screen: .main, item: .filter))
         let filtersVC = FiltersViewController(selectedFilter: currentFilter) { [weak self] selectedFilter in
             self?.applyFilter(selectedFilter)
         }
@@ -456,7 +456,7 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func addButtonTapped() {
-        analyticsService.report(event: "click", params: ["screen": "Main", "item": "add_track"])
+        analyticsService.report(.click(screen: .main, item: .addTrack))
         let habitVC = HabitViewController(
             trackerCategoryStore: trackerCategoryStore,
             trackerRecordStore: trackerRecordStore
@@ -474,7 +474,7 @@ final class TrackersViewController: UIViewController {
     }
     
     func handleTrackerCompletion(_ trackerId: UUID, _ isCompleted: Bool) {
-        analyticsService.report(event: "click", params: ["screen": "Main", "item": "track"])
+        analyticsService.report(.click(screen: .main, item: .track))
         if isCompleted {
             completeTracker(with: trackerId)
         } else {
@@ -545,7 +545,7 @@ extension TrackersViewController: UICollectionViewDelegate {
             title: Localizable.editAction,
             image: nil
         ) { [weak self] _ in
-            self?.analyticsService.report(event: "click", params: ["screen": "Main", "item": "edit"])
+            self?.analyticsService.report(.click(screen: .main, item: .edit))
             self?.editTracker(tracker)
         }
         
@@ -554,7 +554,7 @@ extension TrackersViewController: UICollectionViewDelegate {
             image: nil,
             attributes: .destructive
         ) { [weak self] _ in
-            self?.analyticsService.report(event: "click", params: ["screen": "Main", "item": "delete"])
+            self?.analyticsService.report(.click(screen: .main, item: .delete))
             self?.deleteTracker(tracker)
         }
         
